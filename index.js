@@ -11,13 +11,19 @@ const userRoute = require("./router/userRoute");
 app.use(express.json());
 
 /**
- * ? Router
+ * ?  User Router
  */
+
+
 app.use("/user/orders", userRoute);
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+
+/**
+ * ?  Seller Router
+ */
+app.use("/user/orders", sellerRoute);
+
+
 
 app.listen(PORT, () => {
   console.log("Server is Listenig at Port: ", PORT);

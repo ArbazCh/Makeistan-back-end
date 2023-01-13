@@ -1,15 +1,18 @@
 const { application } = require("express");
 const router = require("express").Router();
 const {
+  getAllOrders,
   getOrderById,
   createOrder,
   cancelOrder,
 } = require("../controllers/userController");
 
-router.route("/:id").get(getOrderById);
+router.get("/orders", getAllOrders);
 
-router.route("/create").post(createOrder);
+router.get("/orders/:id", getOrderById);
 
-router.route("/:id").put(cancelOrder);
+router.post("/orders/create", createOrder);
+
+router.put("/orders/:id", cancelOrder);
 
 module.exports = router;

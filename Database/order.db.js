@@ -8,7 +8,7 @@ const getAllOrderDb = async () => {
 //Get order by id
 const getOrderDb = async ({ id }) => {
   const query = `
-      SELECT oi."orderNumber",p."name",p."unitPrice", o."orderId",o."orderStatus",oi."quantity"
+      SELECT  o."orderId", oi."orderNumber",u."customerId",p."name",p."unitPrice",o."orderStatus",oi."quantity"
       FROM users as u
       INNER JOIN orders as o
       ON o."customerId"=u."customerId"	
@@ -16,7 +16,7 @@ const getOrderDb = async ({ id }) => {
       ON oi."orderId"=o."orderId"
       INNER JOIN "products" as p
       ON p."productId"=oi."productId"
-        WHERE u."orderId"=$1
+        WHERE o."orderId"=$1
       `;
   return await dbConfig.query(query, [id]); // return the result
 };
@@ -61,6 +61,7 @@ const creatOrderDb = async ({
 
 //Cancel order Db
 const cancelOrderDb = async ({ id }) => {
+  console.log("Cancel order Db");
   const query = `UPDATE "orders" SET "orderStatus"='Cancelled' WHERE "orderId"=$1 RETURNING *`;
   return await dbConfig.query(query, [id]);
 };

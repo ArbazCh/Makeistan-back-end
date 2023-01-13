@@ -90,11 +90,11 @@ const createOrder = async (req, res) => {
 };
 
 const cancelOrder = async (req, res) => {
+  s;
   try {
     const { id } = req.params;
-    const { orderId } = req.body;
-    const cancelOrder = await cancelOrderDb({ id, orderId });
-    cancelOrder
+    const cancelOrder = await cancelOrderDb({ id });
+    cancelOrder.rows.length
       ? res.json({
           status: API_STATUS_CODES.SUCCESS,
           message: RESPONSE_MESSAGES.ORDER_CANCLLED,
@@ -106,6 +106,7 @@ const cancelOrder = async (req, res) => {
       err.message
     );
   }
+  // console.log("Hello1", cancelOrder);
 };
 
 module.exports = { getAllOrders, getOrderById, createOrder, cancelOrder };

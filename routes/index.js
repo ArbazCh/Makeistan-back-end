@@ -1,11 +1,11 @@
 const router = require("express").Router();
 
-const admin = require("./admin");
+// const admin = require("./admin");
+// const seller = require("./seller");
 const customer = require("./customer");
-const seller = require("./seller");
 
-router.route("/admin", admin);
-router.route("/seller", seller);
-router.route("/customer", customer);
+// router.use("/admin", admin);
+// router.use("/seller", seller);
+router.use("/customer", customer);
 
 module.exports = router;

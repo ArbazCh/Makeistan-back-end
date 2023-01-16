@@ -183,3 +183,7 @@ insert into "orderItem" ("orderId", "productId", "sellerId", "orderNumber", "qua
 
 
 
+ALTER TABLE "users"
+ALTER COLUMN "password" TYPE VARCHAR;
+
+--TODO: Add Total Price in orders Table

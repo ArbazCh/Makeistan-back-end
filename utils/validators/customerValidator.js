@@ -1,6 +1,8 @@
 const validator = require("validator");
 const { encryptPassword } = require("../utils");
-const INVALID_REQUEST = require("../../constants/error");
+const { INVALID_REQUEST } = require("../../constants/error");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const registerValidator = async (req, res, next) => {
   try {
@@ -50,4 +52,20 @@ const loginValidator = async (req, res, next) => {
   }
 };
 
-module.exports = { registerValidator, loginValidator };
+const auth = async (req, res, next) => {
+  try {
+    let token = req.headers.authorization;
+    // console.log(token);
+    if (!token) return res.json(INVALID_REQUEST);
+    const bearer = token.split(" ")[1];
+    const user = jwt.verify(bearer, process.env.SECRET_KEY);
+    // console.log("user:", user, "Bearer: ", bearer);
+    req.user = user;
+    next();
+  } catch (err) {
+    res.status(INVALID_REQUEST.status).json(INVALID_REQUEST.message);
+    console.error(new Error("auth catch error: "), err.message);
+  }
+};
+
+module.exports = { registerValidator, loginValidator, auth };

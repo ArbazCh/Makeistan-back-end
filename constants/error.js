@@ -12,5 +12,8 @@ const AUTHORIZATION_FAILED = {
   status: API_STATUS_CODES.AUTHORIZATION_FAILED,
   message: "Authorization failed.",
 };
-
-module.exports = { CONTROLLER_ERROR, INVALID_REQUEST, AUTHORIZATION_FAILED };
+module.exports = {
+  CONTROLLER_ERROR,
+  INVALID_REQUEST,
+  AUTHORIZATION_FAILED,
+};

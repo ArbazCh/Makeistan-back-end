@@ -5,7 +5,7 @@ const {
 const { CONTROLLER_ERROR, INVALID_REQUEST } = require("../constants/error");
 const {
   getAllOrderDb,
-  getOrderDb,
+  getOrderByIdDb,
   creatOrderDb,
   cancelOrderDb,
 } = require("../Database/order.db");
@@ -18,8 +18,9 @@ const bcrypt = require("bcryptjs");
 require("dotenv").config();
 
 const getAllOrders = async (req, res) => {
+  const { id } = req.user;
   try {
-    const orders = await getAllOrderDb();
+    const orders = await getAllOrderDb({ id });
     orders
       ? res.json({
           status: API_STATUS_CODES.SUCCESS,
@@ -33,10 +34,11 @@ const getAllOrders = async (req, res) => {
 };
 
 const getOrderById = async (req, res) => {
-  // console.log("Get by Id");
+  const { orderId } = req.params;
+  const { id } = req.user;
+  // console.log(req.user, id);
   try {
-    const { id } = req.params;
-    const orderById = await getOrderDb({ id });
+    const orderById = await getOrderByIdDb({ orderId, id });
     orderById.rows.length
       ? res.json({
           status: API_STATUS_CODES.SUCCESS,
@@ -53,30 +55,25 @@ const getOrderById = async (req, res) => {
 };
 
 const createOrder = async (req, res) => {
+  const { id } = req.user;
+  // console.log(id);
+  const {
+    // productId,
+    // quantity,
+    paymentId,
+    date,
+    time,
+    orderStatus,
+    // sellerId,
+    // orderNumber,
+  } = req.body;
   try {
-    const { id } = req.params;
-    const {
-      productId,
-      quantity,
-      paymentId,
-      date,
-      time,
-      orderStatus,
-      orderId,
-      sellerId,
-      orderNumber,
-    } = req.body;
     const createOrder = await creatOrderDb({
       id,
-      productId,
-      quantity,
       paymentId,
       date,
       time,
       orderStatus,
-      orderId,
-      sellerId,
-      orderNumber,
     });
     createOrder
       ? res.json({
@@ -97,10 +94,11 @@ const createOrder = async (req, res) => {
 };
 
 const cancelOrder = async (req, res) => {
-  s;
+  const { id } = req.user;
+  const { orderId } = req.params;
+  // console.log(id, orderId);
   try {
-    const { id } = req.params;
-    const cancelOrder = await cancelOrderDb({ id });
+    const cancelOrder = await cancelOrderDb({ id, orderId });
     cancelOrder.rows.length
       ? res.json({
           status: API_STATUS_CODES.SUCCESS,
@@ -153,7 +151,7 @@ const loginCustomer = async (req, res) => {
      */
 
     const verifyUser = await loginCustomerDb({ email });
-    // console.log("Inside try login controller: ", verifyUser.rows);
+    // console.log("Inside try login controller verifyUser: ", verifyUser.rows[0]);
     if (verifyUser.rows.length < 1) {
       return res.json({ INVALID_REQUEST });
     }
@@ -173,7 +171,7 @@ const loginCustomer = async (req, res) => {
      */
     const token = await jwt.sign(
       {
-        id: verifyUser.rows[0].userId,
+        id: verifyUser.rows[0].customerId,
         email: verifyUser.rows[0].email,
       },
       process.env.SECRET_KEY
@@ -181,8 +179,7 @@ const loginCustomer = async (req, res) => {
     res.json({
       status: API_STATUS_CODES.CREATED,
       user: {
-        id: verifyUser.rows[0].userId,
-        name: verifyUser.rows[0].firstName,
+        id: verifyUser.rows[0].customerId,
         email: verifyUser.rows[0].email,
       },
       token: token,

@@ -52,7 +52,7 @@ const loginValidator = async (req, res, next) => {
   }
 };
 
-const auth = async (req, res, next) => {
+const authorize = async (req, res, next) => {
   try {
     let token = req.headers.authorization;
     // console.log(token);
@@ -68,4 +68,24 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = { registerValidator, loginValidator, auth };
+const orderValidator = async (req, res, next) => {
+  console.log(req.body);
+  try {
+    const { paymentId, productId, sellerId, orderNumber, quantity } = req.body;
+    if (paymentId && productId && sellerId && orderNumber && quantity >= 1)
+      return next();
+    else {
+      return res.status(INVALID_REQUEST.status).json(INVALID_REQUEST.message);
+    }
+  } catch (err) {
+    res.status(INVALID_REQUEST.status).json(INVALID_REQUEST.message);
+    console.error(new Error(" catch error orderValidator: ", err.message));
+  }
+};
+
+module.exports = {
+  registerValidator,
+  loginValidator,
+  authorize,
+  orderValidator,
+};

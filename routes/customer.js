@@ -7,24 +7,26 @@ const {
   getOrderById,
   createOrder,
   cancelOrder,
-} = require("../controllers/userController");
+} = require("../controllers/customerController");
 
 const {
   registerValidator,
   loginValidator,
+  authorize,
+  orderValidator,
 } = require("../utils/validators/customerValidator");
-const { auth } = require("../utils/validators/customerValidator");
+// const { authorize } = require("../utils/validators/customerValidator");
 
 router.post("/register", registerValidator, registerCustomer);
 
 router.post("/login", loginValidator, loginCustomer);
 
-router.get("/orders", auth, getAllOrders); //TODO Auth is not working.
+router.get("/orders", authorize, getAllOrders);
 
-router.get("/orders/:orderId", auth, getOrderById);
+router.get("/orders/:orderId", authorize, getOrderById);
 
-router.post("/orders/create", auth, createOrder); //TODO orderValidator is yet to be defined
+router.post("/orders/create", authorize, orderValidator, createOrder);
 
-router.put("/orders/cancel/:orderId", auth, cancelOrder);
+router.put("/orders/cancel/:orderId", authorize, cancelOrder);
 
 module.exports = router;

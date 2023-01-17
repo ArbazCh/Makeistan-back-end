@@ -8,14 +8,13 @@ const {
   getOrderByIdDb,
   creatOrderDb,
   cancelOrderDb,
-} = require("../Database/order.db");
+} = require("../repository/order.db");
 const {
   registerCustomerDb,
   loginCustomerDb,
-} = require("../Database/customer.db");
+} = require("../repository/customer.db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-require("dotenv").config();
 
 const getAllOrders = async (req, res) => {
   const { id } = req.user;
@@ -55,25 +54,29 @@ const getOrderById = async (req, res) => {
 };
 
 const createOrder = async (req, res) => {
-  const { id } = req.user;
+  const { id } = req.user; //customerId
   // console.log(id);
   const {
-    // productId,
-    // quantity,
+    productId,
+    quantity,
     paymentId,
     date,
     time,
     orderStatus,
-    // sellerId,
-    // orderNumber,
+    sellerId,
+    orderNumber,
   } = req.body;
   try {
     const createOrder = await creatOrderDb({
       id,
+      productId,
+      quantity,
       paymentId,
       date,
       time,
       orderStatus,
+      sellerId,
+      orderNumber,
     });
     createOrder
       ? res.json({
@@ -87,7 +90,7 @@ const createOrder = async (req, res) => {
         });
   } catch (err) {
     console.error(
-      new Error("User controller: Create Order Error"),
+      new Error("Customer controller: Create Order Error"),
       err.message
     );
   }

@@ -33,18 +33,17 @@ const getOrderByIdDb = async ({ orderId, id }) => {
 //!!!How to insert in order item table if there are more than one product id's
 const creatOrderDb = async ({
   id,
-  // productId, //it can b array of multiple values???? To do
-  // quantity,
+  productId, //it can b array of multiple values???? To do
+  quantity,
   paymentId,
   date,
   time,
   orderStatus,
-  // orderId, // !!!how to insert in order itme???, Run Multiple Queries for Order and  Order Item
-  // sellerId,
-  // orderNumber,
+  sellerId,
+  orderNumber,
 }) => {
   //INSERT INTO ORDER TABLE
-  const insertOrder = `INSERT INTO orders("customerId","paymentId","date","time","orderStatus") VALUES($1,$2,$3,$4,$5) RETURNING *`;
+  const insertOrder = `INSERT INTO orders("customerId","paymentId","date","time","orderStatus") VALUES($1,$2,$3,$4,$5) RETURNING "orderId"`;
   const order = await dbConfig.query(insertOrder, [
     id,
     paymentId,
@@ -52,18 +51,18 @@ const creatOrderDb = async ({
     time,
     orderStatus,
   ]);
-
-  // const { id } = order;
-  //INSERT INTO ORDER ITEM TABLE//
-  // const insertorderItem = `INSERT INTO "orderItem"("orderId","productId","sellerId","orderNumber","quantity") VALUES ($1,$2,$3,$4,$5) RETURNING*`;
-  // const item = await dbConfig.query(insertorderItem, [
-  //   orderId,
-  //   productId,
-  //   sellerId,
-  //   orderNumber,
-  //   quantity,
-  // ]);
-  return { order }; //?? Need to confirm
+  // console.log(order.rows[0].orderId);
+  const orderId = order.rows[0].orderId;
+  // INSERT INTO ORDER ITEM TABLE
+  const insertorderItem = `INSERT INTO "orderItem"("orderId","productId","sellerId","orderNumber","quantity") VALUES ($1,$2,$3,$4,$5) RETURNING*`;
+  const item = await dbConfig.query(insertorderItem, [
+    orderId,
+    productId,
+    sellerId,
+    orderNumber,
+    quantity,
+  ]);
+  return { order, item };
 };
 
 //Cancel order Db
@@ -72,4 +71,25 @@ const cancelOrderDb = async ({ id, orderId }) => {
   const query = `UPDATE "orders" SET "orderStatus"='Cancelled' WHERE "customerId"=$1 AND "orderId"=$2 RETURNING *`;
   return await dbConfig.query(query, [id, orderId]);
 };
-module.exports = { getAllOrderDb, getOrderByIdDb, creatOrderDb, cancelOrderDb };
+
+const getAllSellersOrderDb = async ({ id }) => {
+  const query = `SELECT * FROM "orderItem" WHERE "sellerId"=$1`;
+  const orders = await dbConfig.query(query, [2]);
+  return orders;
+};
+
+const getSellerOrderByID = async ({ orderId }) => {
+  const query = `SELECT * FROM "orderItem" WHERE "sellerId"=$1 AND "orderId"=$2`;
+  const order = await dbConfig.query(query, [1, orderId]);
+  console.log(order);
+  return order;
+};
+
+module.exports = {
+  getAllOrderDb,
+  getOrderByIdDb,
+  creatOrderDb,
+  cancelOrderDb,
+  getAllSellersOrderDb,
+  getSellerOrderByID,
+};

@@ -1,12 +1,13 @@
 const { application } = require("express");
 const router = require("express").Router();
+const { authorize } = require("../utils/validators/customerValidator");
 
-// router.get("/orders", auth, getAllOrders); //TODO Auth is not working.
+//TODO unit Testing
 
-// router.get("/orders/:id", auth, getOrderBySellerId);
+router.get("/orders", authorize, getAllOrders);
 
-// router.get("/orders/:id", auth, getOrderByCustomerId);
+router.get("/orders/:orderId", authorize, getOrderBySellerId);
 
-// router.post("/orders/cancel", auth, cancelOrder); //TODO orderValidator is yet to be defined
+router.get("/orders/:orderId", authorize, getOrderByCustomerId);
 
 module.exports = router;

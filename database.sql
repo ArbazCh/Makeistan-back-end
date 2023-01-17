@@ -89,8 +89,8 @@ ALTER TABLE "products" ADD FOREIGN KEY ("subcategoryId") REFERENCES "subCategori
 ALTER TABLE "products" ADD FOREIGN KEY ("sellerId") REFERENCES "sellers" ("sellerId");
 
 ALTER TABLE "orders" ADD FOREIGN KEY ("customerId") REFERENCES "users" ("customerId");
-ALTER TABLE "orders" ADD FOREIGN KEY ("paymentId") REFERENCES "paymentMethods" ("paymentId");
 ALTER TABLE "orderItem" ADD FOREIGN KEY ("sellerId") REFERENCES "sellers" ("sellerId");
+ALTER TABLE "orders" ADD FOREIGN KEY ("paymentId") REFERENCES "paymentMethods" ("paymentId");
 ALTER TABLE "orderItem" ADD FOREIGN KEY ("orderId") REFERENCES "orders" ("orderId");
 ALTER TABLE "orderItem" ADD FOREIGN KEY ("productId") REFERENCES "products" ("productId");
 
@@ -109,29 +109,28 @@ insert into "subCategories" ("name", "categoryId") values ('Women', 1);
 insert into "subCategories" ("name", "categoryId") values ('Kids', 1);
 
 -- 4. Insert Data into sellers, 10 Sellers
-insert into "sellers" ("profilePicture","email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values ('http://dummyimage.com/205x187.png/ff4444/ffffff','triggeard0@wikia.com', 'Ivonne D''Ambrosi', '3605926578', '7817250185', 'Apt 1494', 'Tonia Riggeard', 'http://dummyimage.com/205x187.png/ff4444/ffffff');
-insert into "sellers" ("profilePicture","email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values ('http://dummyimage.com/205x187.png/ff4444/ffffff','cgookey1@sina.com.cn', 'Pavlov Fraczak', '9758780920', '9601053240', 'Apt 165', 'Chloe Gookey', 'http://dummyimage.com/124x162.png/cc0000/ffffff');
-insert into "sellers" ("profilePicture","email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values ('http://dummyimage.com/205x187.png/ff4444/ffffff','acannan2@businesswire.com', 'Sheila Truin', '3891299683', '5403292720', 'PO Box 57046', 'Andrew Cannan', 'http://dummyimage.com/250x174.png/dddddd/000000');
-insert into "sellers" ("profilePicture","email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values ('http://dummyimage.com/205x187.png/ff4444/ffffff','kmcconaghy3@auda.org.au', 'Penn Budik', '4701420209', '8617701916', 'Room 1270', 'Kerry McConaghy','http://dummyimage.com/169x111.png/dddddd/000000');
-insert into "sellers" ("profilePicture","email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values ('http://dummyimage.com/205x187.png/ff4444/ffffff','ckarpov4@fastcompany.com', 'Wendeline Ciciura', '2332429293', '4365493250', '3rd Floor', 'Cherry Karpov', 'http://dummyimage.com/237x223.png/ff4444/ffffff');
-insert into "sellers" ("profilePicture","email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values ('http://dummyimage.com/205x187.png/ff4444/ffffff','tlucken5@scientificamerican.com', 'Sharl Tortice', '2896530438', '9471365134', 'Suite 73', 'Travis Lucken', 'http://dummyimage.com/233x120.png/cc0000/ffffff');
-insert into "sellers" ("profilePicture","email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values ('http://dummyimage.com/205x187.png/ff4444/ffffff','oclayborn6@reverbnation.com', 'Sascha Bonwick', '1051394710', '5558042662', 'Apt 586', 'Ogdon Clayborn', 'http://dummyimage.com/136x219.png/dddddd/000000');
-insert into "sellers" ("profilePicture","email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values ('http://dummyimage.com/205x187.png/ff4444/ffffff','bseston7@nasa.gov', 'Rora Rake', '8045000925', '4877992535', 'Room 1283', 'Bertrando Seston', 'http://dummyimage.com/161x163.png/ff4444/ffffff');
-insert into "sellers" ("profilePicture","email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values ('http://dummyimage.com/205x187.png/ff4444/ffffff','omaccrie8@printfriendly.com', 'Rooney Agerskow', '2015964791', '2369099731', 'PO Box 52106', 'Olive Maccrie', 'http://dummyimage.com/241x225.png/cc0000/ffffff');
-insert into "sellers" ("profilePicture","email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values ('http://dummyimage.com/205x187.png/ff4444/ffffff','vserginson9@cbslocal.com', 'Frederich Duligall', '6724162546', '8235768196', '8th Floor', 'Vanessa Serginson', 'http://dummyimage.com/109x172.png/5fa2dd/ffffff');
-
+insert into "sellers" ("email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values (1, 'triggeard0@wikia.com', 'Ivonne D''Ambrosi', '360 592 6578', '781 725 0185', 'Apt 1494', 'Tonia Riggeard', 'http://dummyimage.com/205x187.png/ff4444/ffffff');
+insert into "sellers" ("email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values (2, 'cgookey1@sina.com.cn', 'Pavlov Fraczak', '975 878 0920', '960 105 3240', 'Apt 165', 'Chloe Gookey', 'http://dummyimage.com/124x162.png/cc0000/ffffff');
+insert into "sellers" ("email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values (3, 'acannan2@businesswire.com', 'Sheila Truin', '389 129 9683', '540 329 2720', 'PO Box 57046', 'Andrew Cannan', 'http://dummyimage.com/250x174.png/dddddd/000000');
+insert into "sellers" ("email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values (4, 'kmcconaghy3@auda.org.au', 'Penn Budik', '470 142 0209', '861 770 1916', 'Room 1270', 'Kerry McConaghy','http://dummyimage.com/169x111.png/dddddd/000000');
+insert into "sellers" ("email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values (5, 'ckarpov4@fastcompany.com', 'Wendeline Ciciura', '233 242 9293', '436 549 3250', '3rd Floor', 'Cherry Karpov', 'http://dummyimage.com/237x223.png/ff4444/ffffff');
+insert into "sellers" ("email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values (6, 'tlucken5@scientificamerican.com', 'Sharl Tortice', '289 653 0438', '947 136 5134', 'Suite 73', 'Travis Lucken', 'http://dummyimage.com/233x120.png/cc0000/ffffff');
+insert into "sellers" ("email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values (7, 'oclayborn6@reverbnation.com', 'Sascha Bonwick', '105 139 4710', '555 804 2662', 'Apt 586', 'Ogdon Clayborn', 'http://dummyimage.com/136x219.png/dddddd/000000');
+insert into "sellers" ("email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values (8, 'bseston7@nasa.gov', 'Rora Rake', '804 500 0925', '487 799 2535', 'Room 1283', 'Bertrando Seston', 'HzpT4KeX', 'http://dummyimage.com/161x163.png/ff4444/ffffff');
+insert into "sellers" ("email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values (9, 'omaccrie8@printfriendly.com', 'Rooney Agerskow', '201 596 4791', '236 909 9731', 'PO Box 52106', 'Olive Maccrie', 'http://dummyimage.com/241x225.png/cc0000/ffffff');
+insert into "sellers" ("email", "fullName", "CNIC", "mobileNumber", "address", "shopName",  "cnicPicture") values (10, 'vserginson9@cbslocal.com', 'Frederich Duligall', '672 416 2546', '823 576 8196', '8th Floor', 'Vanessa Serginson', 'http://dummyimage.com/109x172.png/5fa2dd/ffffff');
 
 -- 5. Insert Data into Products, 10 Products
-insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subcategoryId", "sellerId") values ('Men Shirt', 'Displ commnt fx shaft of unsp fibula, 7thD', 'http://dummyimage.com/1071x531.png/ff4444/ffffff', 500, 500, 2, 1, 1);
-insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subcategoryId", "sellerId") values ('Women Shirt', 'War op w chem weapons and oth unconvtl warfare, civ, subs', 'http://dummyimage.com/1821x1299.png/dddddd/000000', 100, 95, 2, 2, 2);
-insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subcategoryId", "sellerId") values ('Kid Shirt', 'Nondisp fx of shaft of first metacarpal bone, unsp hand', 'http://dummyimage.com/817x460.png/dddddd/000000', 100, 56, 180, 3, 3);
-insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subcategoryId", "sellerId") values ('Men Jacket', 'Oth physl fx lower end of l fibula, subs for fx w routn heal', 'http://dummyimage.com/1341x542.png/dddddd/000000', 80, 500, 2, 1, 4);
-insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subcategoryId", "sellerId") values ('Women Jacket', 'Poisoning by anticoagulants, undetermined', 'http://dummyimage.com/1170x1100.png/cc0000/ffffff', 400, 54, 5, 2, 5);
-insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subcategoryId", "sellerId") values ('Kids Jacket', 'Disp fx of neck of unsp radius, subs for clos fx w malunion', 'http://dummyimage.com/1956x759.png/5fa2dd/ffffff', 210, 100, 3, 3, 6);
-insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subcategoryId", "sellerId") values ('Men Cap', 'Malignant neoplasm of urethra', 'http://dummyimage.com/1205x980.png/dddddd/000000', 300, 82, 1, 1, 7);
-insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subcategoryId", "sellerId") values ('Women Cap', 'Injury of accessory nerve, left side, subsequent encounter', 'http://dummyimage.com/371x1069.png/5fa2dd/ffffff', 500, 680, 3, 2, 8);
-insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subcategoryId", "sellerId") values ('Kids Cap', 'Nondisplaced fracture of trapezoid, unspecified wrist', 'http://dummyimage.com/763x1250.png/5fa2dd/ffffff', 500, 77, 3, 3, 9);
-insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subcategoryId", "sellerId") values ('Men Hood', 'Gangrene and necrosis of lung', 'http://dummyimage.com/541x1952.png/cc0000/ffffff', 500, 67, 2, 1, 10);
+insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subCategoryId", "sellerId") values ('Men Shirt', 'Displ commnt fx shaft of unsp fibula, 7thD', 'http://dummyimage.com/1071x531.png/ff4444/ffffff', 500, 500, 2, 1, 1);
+insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subCategoryId", "sellerId") values ('Women Shirt', 'War op w chem weapons and oth unconvtl warfare, civ, subs', 'http://dummyimage.com/1821x1299.png/dddddd/000000', 100, 95, 2, 2, 2);
+insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subCategoryId", "sellerId") values ('Kid Shirt', 'Nondisp fx of shaft of first metacarpal bone, unsp hand', 'http://dummyimage.com/817x460.png/dddddd/000000', 100, 56, 180, 3, 3);
+insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subCategoryId", "sellerId") values ('Men Jacket', 'Oth physl fx lower end of l fibula, subs for fx w routn heal', 'http://dummyimage.com/1341x542.png/dddddd/000000', 80, 500, 410, 2, 1, 4);
+insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subCategoryId", "sellerId") values ('Women Jacket', 'Poisoning by anticoagulants, undetermined', 'http://dummyimage.com/1170x1100.png/cc0000/ffffff', 400, 54, 56, 2, 5);
+insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subCategoryId", "sellerId") values ('Kids Jacket', 'Disp fx of neck of unsp radius, subs for clos fx w malunion', 'http://dummyimage.com/1956x759.png/5fa2dd/ffffff', 210, 100, 390, 72, 3, 6);
+insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subCategoryId", "sellerId") values ('Men Cap', 'Malignant neoplasm of urethra', 'http://dummyimage.com/1205x980.png/dddddd/000000', 300, 82, 10, 1, 7);
+insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subCategoryId", "sellerId") values ('Women Cap', 'Injury of accessory nerve, left side, subsequent encounter', 'http://dummyimage.com/371x1069.png/5fa2dd/ffffff', 500, 680, 54, 2, 8);
+insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subCategoryId", "sellerId") values ('Kids Cap', 'Nondisplaced fracture of trapezoid, unspecified wrist', 'http://dummyimage.com/763x1250.png/5fa2dd/ffffff', 500, 77, 920, 3, 9);
+insert into "products" ("name", "description", "image", "unitPrice", "stockQuantity", "weight", "subCategoryId", "sellerId") values ('Men Hood', 'Gangrene and necrosis of lung', 'http://dummyimage.com/541x1952.png/cc0000/ffffff', 500, 67, 320, 1, 10);
 
 -- 6. Insert Data into users, 10 users
 insert into "users" ("firstName", "lastName", "email", "address", "password") values ('Caryl', 'Crosier', 'ccrosier0@scribd.com', 'Room 664', 'pBQI81fl');
@@ -179,6 +178,13 @@ insert into "orderItem" ("orderId", "productId", "sellerId", "orderNumber", "qua
 insert into "orderItem" ("orderId", "productId", "sellerId", "orderNumber", "quantity") values (9, 5,5,   '436206966',5);
 insert into "orderItem" ("orderId", "productId", "sellerId", "orderNumber", "quantity") values (10,4,4,   '391539477',3);
 
+
+
+
+ALTER TABLE "users"
+ALTER COLUMN "password" TYPE VARCHAR;
+
+--TODO: Add Total Price in orders Table
 -- 9. Insert Data into admin, 1 admin
 INSERT INTO "admin" ("name","loginId","password" ) VALUES ('Musharib','122345','XHTH67H');
 

@@ -81,7 +81,6 @@ CREATE TABLE "orderItem"(
 --FK
 "sellerId" INT NOT NULL,
 "orderNumber" VARCHAR NOT NULL,
-"unitPrice" INT NOT NULL,
 "quantity" INT NOT NULL);
 
 
@@ -182,8 +181,18 @@ insert into "orderItem" ("orderId", "productId", "sellerId", "orderNumber", "qua
 
 
 
-
 ALTER TABLE "users"
 ALTER COLUMN "password" TYPE VARCHAR;
 
 --TODO: Add Total Price in orders Table
+-- 9. Insert Data into admin, 1 admin
+INSERT INTO "admin" ("name","loginId","password" ) VALUES ('Musharib','122345','XHTH67H');
+
+
+
+"adminId" SERIAL PRIMARY KEY,
+"name" VARCHAR(35) NOT NULL,
+"loginId" VARCHAR(35) NOT NULL,
+"password" VARCHAR(30) NOT NULL
+
+

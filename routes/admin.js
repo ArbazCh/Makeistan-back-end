@@ -6,7 +6,10 @@ const {
   getCategoryById,
   UpdateCategoryById,
   CreateCategory,
-} = require("./Controllers/adminController");
+  getAllOrders,
+  getOrdersBySellerId,
+  getOrdersByCustomerId,
+} = require("../controllers/adminController");
 
 router.get("/category", getAllCategories);
 
@@ -22,8 +25,8 @@ module.exports = router;
 
 router.get("/orders", authorize, getAllOrders);
 
-router.get("/orders/:orderId", authorize, getOrderBySellerId);
+router.get("/orders/:orderId", authorize, getOrdersBySellerId);
 
-router.get("/orders/:orderId", authorize, getOrderByCustomerId);
+router.get("/orders/:orderId", authorize, getOrdersByCustomerId);
 
 module.exports = router;

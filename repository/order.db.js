@@ -78,18 +78,55 @@ const getAllSellersOrderDb = async ({ id }) => {
   return orders;
 };
 
-const getSellerOrderByID = async ({ orderId }) => {
+const getSellerOrderByIDDb = async ({ orderId }) => {
   const query = `SELECT * FROM "orderItem" WHERE "sellerId"=$1 AND "orderId"=$2`;
   const order = await dbConfig.query(query, [1, orderId]);
-  console.log(order);
+  // console.log(order.rows >= 1);
   return order;
 };
 
+const sellerOrderCompleteDb = async ({ orderId }) => {
+  const query = `UPDATE "orders"
+  SET "orderStatus"='Delivered'
+  WHERE "orderId"= (
+    SELECT "orderId" FROM "orderItem"
+  WHERE "sellerId"=$1 AND "orderId"=$2);`;
+  const status = dbConfig.query(query, [1, orderId]);
+  return status;
+};
+
+const sellerOrderCancelDb = async ({ orderId }) => {
+  const query = `UPDATE "orders" SET "orderStatus"='Cancelled' WHERE "sellerId"=$1 AND "orderId"=$2 RETURNING *`;
+  return await dbConfig.query(query, [2, orderId]);
+};
+
+const getAllAdminOrdersDb = async () => {
+  const query = `SELECT * FROM "orders"`;
+  const orders = dbConfig.query(query);
+  return orders;
+};
+
+const getAdminSellerOrdersByIDDb = async ({ orderId, sellerId }) => {
+  const query = `SELECT * FROM "orderItem" WHERE orderId=$1 AND "sellerId"=$2`;
+  const orders = dbConfig.query(query, [orderId, sellerId]);
+  return orders;
+};
+
+const getAdminCustomerOrdersByIDDb = async ({ orderId, customerId }) => {
+  const query = `SELECT * FROM "orderItem" WHERE orderId=$1 AND "customerId"=$2`;
+  const orders = dbConfig.query(query, [orderId, customerId]);
+  return orders;
+};
 module.exports = {
   getAllOrderDb,
   getOrderByIdDb,
   creatOrderDb,
   cancelOrderDb,
   getAllSellersOrderDb,
-  getSellerOrderByID,
+  getSellerOrderByIDDb,
+  sellerOrderCompleteDb,
+  sellerOrderCancelDb,
+  getAllAdminOrdersDb,
+  getAdminSellerOrdersByIDDb,
+  getAdminCustomerOrdersByIDDb,
 };

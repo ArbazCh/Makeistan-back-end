@@ -1,8 +1,15 @@
-const router = require("express").Router();
-const pool = require("../db.config")
 const { application } = require("express");
-const {getAllCategories,
-getCategoryById,UpdateCategoryById,CreateCategory} = require("./Controllers/adminController");
+const router = require("express").Router();
+const { authorize } = require("../utils/validators/customerValidator");
+const {
+  getAllCategories,
+  getCategoryById,
+  UpdateCategoryById,
+  CreateCategory,
+  getAllOrders,
+  getOrdersBySellerId,
+  getOrdersByCustomerId,
+} = require("../controllers/adminController");
 
 router.get("/category", getAllCategories);
 
@@ -14,13 +21,12 @@ router.post("/category/create", CreateCategory);
 
 module.exports = router;
 
+//TODO unit Testing
 
-// router.get("/orders", auth, getAllOrders); //TODO Auth is not working.
+router.get("/orders", authorize, getAllOrders);
 
-// router.get("/orders/:id", auth, getOrderBySellerId);
+router.get("/orders/:orderId", authorize, getOrdersBySellerId);
 
-// router.get("/orders/:id", auth, getOrderByCustomerId);
-
-// router.post("/orders/cancel", auth, cancelOrder); //TODO orderValidator is yet to be defined
+router.get("/orders/:orderId", authorize, getOrdersByCustomerId);
 
 module.exports = router;

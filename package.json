@@ -1,23 +1,37 @@
 {
   "name": "makeistan",
   "version": "1.0.0",
+<<<<<<< HEAD
   "description": "This is an B2B E-commerce website, which connects wholeseller to retailer.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js"
+=======
+  "description": "This module is managing the order of project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js",
+    "migrate": "node-pg-migrate"
+>>>>>>> 4b2d9f0243d446c0e7949011b25b22f39be01616
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ArbazCh/Makeistan.git"
   },
+<<<<<<< HEAD
   "author": "",
+=======
+  "author": "Arbaz Chaudhary",
+>>>>>>> 4b2d9f0243d446c0e7949011b25b22f39be01616
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ArbazCh/Makeistan/issues"
   },
   "homepage": "https://github.com/ArbazCh/Makeistan#readme",
   "dependencies": {
+<<<<<<< HEAD
     "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
@@ -25,5 +39,15 @@
     "jsonwebtoken": "^9.0.0",
     "nodemon": "^2.0.20",
     "pg": "^8.8.0"
+=======
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "node-pg-migrate": "^6.2.2",
+    "nodemon": "^2.0.20",
+    "pg": "^8.8.0",
+    "validator": "^13.7.0"
+>>>>>>> 4b2d9f0243d446c0e7949011b25b22f39be01616
   }
 }

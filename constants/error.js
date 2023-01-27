@@ -18,3 +18,4 @@ module.exports = {
   INVALID_REQUEST,
   AUTHORIZATION_FAILED,
 };
+

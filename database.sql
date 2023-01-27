@@ -179,5 +179,16 @@ insert into "orderItem" ("orderId", "productId", "sellerId", "orderNumber", "qua
 insert into "orderItem" ("orderId", "productId", "sellerId", "orderNumber", "quantity") values (9, 5,5,   '436206966',5);
 insert into "orderItem" ("orderId", "productId", "sellerId", "orderNumber", "quantity") values (10,4,4,   '391539477',3);
 
+
+
+
+ALTER TABLE "users"
+ALTER COLUMN "password" TYPE VARCHAR;
+
+--TODO: Add Total Price in orders Table
 -- 9. Insert Data into admin, 1 admin
 INSERT INTO "admin" ("name","loginId","password" ) VALUES ('Musharib','122345','XHTH67H');
+
+ALTER TABLE "sellers"
+ADD "password" VARCHAR;
+

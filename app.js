@@ -1,22 +1,19 @@
 const express = require("express");
 require("dotenv").config();
+const cors=require('cor')
 const app = express();
-
-const cors = require("cors");
-
+const PORT = process.env.HOST_PORT || 5000;
 const routes = require("./routes");
-
-const PORT = process.env.DEV_PORT;
-
-//middleware
-
-app.use(express.json());
 app.use(cors());
 
-//seller Routes
+app.use(express.json());
+
 app.use("/api", routes);
 
-app.listen(PORT, () =>{
-    console.log(`Server is running on port ${PORT}`);
+app.get("/", (req, res) => {
+  res.send(`<h1 style='text-align: center'>MAKEISTAN</h1>`);
 });
 
+app.listen(PORT, () => {
+  console.log("Server is Listening at Port: ", PORT);
+});

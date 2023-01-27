@@ -1,7 +1,7 @@
 const express = require("express");
-
 const {validations, productValidations, authorize} = require("../utils/validators/sellerValidators")
-
+const { application } = require("express");
+const router = require("express").Router();
 const {
     sellerSignup,
     sellerLogin,
@@ -11,10 +11,13 @@ const {
     updateProduct,
     deleteProduct,
     productDetail,
+    getAllOrders,
+    getOrderById,
+    completeOrder,
+    cancelOrder,
     }
      = require("../controllers/sellerController");
 
-const router= express.Router();
 
 router.post('/signup', validations, sellerSignup);
 
@@ -24,12 +27,22 @@ router.get("/sellerProfile", authorize, getSellerProfile);
 
 router.get("/product" , authorize, getAllProduct);
 
-router.post("/product/addProduct", addProduct);
+router.post("/product/addProduct", productValidations,authorize,addProduct);
 
 router.put("/product/:id", productValidations, authorize, updateProduct);
 
 router.delete("/product/:id", authorize, deleteProduct);
 
-router.get("/product/:id", productDetail);
+router.get("/product/:id", authorize, productDetail); //Validate seller
+
+
+//TODO unit Testing
+router.get("/orders", authorize, getAllOrders);
+
+router.get("/order/:orderId", authorize, getOrderById);
+
+router.put("/order/complete/:orderId", authorize, completeOrder);
+
+router.put("/orders/cancel/:orderId", authorize, cancelOrder);
 
 module.exports = router;

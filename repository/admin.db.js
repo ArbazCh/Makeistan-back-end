@@ -1,3 +1,5 @@
+const dbConfig = require("../db.config");
+
 const loginAdminDb = async ({ loginId }) => {
     try {
       const query = `SELECT * FROM admin where "loginId" = $1 LIMIT 1`;
@@ -11,3 +13,4 @@ const loginAdminDb = async ({ loginId }) => {
   };
   
   module.exports = {loginAdminDb };
+

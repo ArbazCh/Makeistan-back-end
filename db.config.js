@@ -12,4 +12,9 @@ const pool = new Pool({
   database: process.env.DATABASE,
 });
 
+pool.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
+
 module.exports = pool;

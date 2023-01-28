@@ -1,6 +1,10 @@
-const { application } = require("express");
+const express = require("express");
 const router = require("express").Router();
+const { application } = require("express");
 const { authorize } = require("../utils/validators/customerValidator");
+const { authorize } = require("../utils/validators/sellerValidators")
+
+const {  getAllSellers } = require("../controllers/adminController"); //TODO
 const {
   getAllCategories,
   getCategoryById,
@@ -28,5 +32,7 @@ router.get("/orders", authorize, getAllOrders);
 router.get("/orders/:orderId", authorize, getOrdersBySellerId);
 
 router.get("/orders/:orderId", authorize, getOrdersByCustomerId);
+
+router.get("/", getAllSellers);
 
 module.exports = router;

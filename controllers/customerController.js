@@ -1,3 +1,6 @@
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 const {
   API_STATUS_CODES,
   RESPONSE_MESSAGES,
@@ -13,34 +16,28 @@ const {
   registerCustomerDb,
   loginCustomerDb,
 } = require("../repository/customer.db");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
 
 const getAllOrders = async (req, res) => {
-  const { id } = req.user;
   try {
-    const orders = await getAllOrderDb({ id });
+    const orders = await getAllOrderDb(req);
     orders
-      ? res.json({
-          status: API_STATUS_CODES.SUCCESS,
+      ? res.status(API_STATUS_CODES.SUCCESS).json({
           message: RESPONSE_MESSAGES.SUCCESS,
           body: orders.rows,
         })
       : res.json(INVALID_REQUEST);
   } catch (err) {
-    console.error(err);
+    console.error(
+      new Error("User controller: Get all order Error"),
+      err.message
+    );
   }
 };
-
 const getOrderById = async (req, res) => {
-  const { orderId } = req.params;
-  const { id } = req.user;
-  // console.log(req.user, id);
   try {
-    const orderById = await getOrderByIdDb({ orderId, id });
+    const orderById = await getOrderByIdDb(req);
     orderById.rows.length
-      ? res.json({
-          status: API_STATUS_CODES.SUCCESS,
+      ? res.status(API_STATUS_CODES.SUCCESS).json({
           message: RESPONSE_MESSAGES.SUCCESS,
           body: orderById.rows,
         })
@@ -54,40 +51,18 @@ const getOrderById = async (req, res) => {
 };
 
 const createOrder = async (req, res) => {
-  const { id } = req.user; //customerId
-  // console.log(id);
-  const {
-    productId,
-    quantity,
-    paymentId,
-    date,
-    time,
-    orderStatus,
-    sellerId,
-    orderNumber,
-  } = req.body;
+  console.log("req: ", req.body);
+
   try {
-    const createOrder = await creatOrderDb({
-      id,
-      productId,
-      quantity,
-      paymentId,
-      date,
-      time,
-      orderStatus,
-      sellerId,
-      orderNumber,
-    });
+    const createOrder = await creatOrderDb(req);
+    // console.log(createOrder);
     createOrder
-      ? res.json({
-          status: API_STATUS_CODES.SUCCESS,
+      ? res.status(API_STATUS_CODES.SUCCESS).json({
           message: RESPONSE_MESSAGES.ORDER_CREATED,
           body: createOrder,
         })
-      : res.json({
-          status: CONTROLLER_ERROR.status,
-          message: CONTROLLER_ERROR.message,
-        });
+      : res.json({ INVALID_REQUEST });
+    // console.log("Im here");
   } catch (err) {
     console.error(
       new Error("Customer controller: Create Order Error"),
@@ -97,14 +72,10 @@ const createOrder = async (req, res) => {
 };
 
 const cancelOrder = async (req, res) => {
-  const { id } = req.user;
-  const { orderId } = req.params;
-  // console.log(id, orderId);
   try {
-    const cancelOrder = await cancelOrderDb({ id, orderId });
+    const cancelOrder = await cancelOrderDb(req);
     cancelOrder.rows.length
-      ? res.json({
-          status: API_STATUS_CODES.SUCCESS,
+      ? res.status(API_STATUS_CODES.SUCCESS).json({
           message: RESPONSE_MESSAGES.ORDER_CANCLLED,
         })
       : res.json({ CONTROLLER_ERROR });
@@ -120,40 +91,34 @@ const cancelOrder = async (req, res) => {
 const registerCustomer = async (req, res) => {
   try {
     // console.log("In reg customer", registerCustomer);
-    const { email, password, firstName, lastName, address } = req.body;
-    const createdUser = await registerCustomerDb({
-      email,
-      password,
-      firstName,
-      lastName,
-      address,
-    });
+    const createdUser = await registerCustomerDb(req);
     // console.log("Register Controller: ", createdUser);
     createdUser
-      ? res.json({
-          status: API_STATUS_CODES.SUCCESS,
+      ? res.status(API_STATUS_CODES.SUCCESS).json({
           message: RESPONSE_MESSAGES.SUCCESS,
           body: createdUser,
         })
       : res.json(CONTROLLER_ERROR);
   } catch (error) {
     if (error.code === API_STATUS_CODES.DUPLICATE_ENTRY) {
-      return res.json({
-        status: API_STATUS_CODES.ERROR_CODE,
+      return res.status(API_STATUS_CODES.ERROR_CODE).json({
         message: RESPONSE_MESSAGES.DUPLICATE_ENTRY,
       });
     }
-    console.log("Catch Error: ", error);
+    console.error(
+      new Error("User controller: register Customer Error"),
+      error.message
+    );
   }
 };
 const loginCustomer = async (req, res) => {
-  const { email, password } = req.body;
+  const { password } = req.body;
+  // console.log("In login", req.body);
   try {
     /**
      * ? Existing User Check
      */
-
-    const verifyUser = await loginCustomerDb({ email });
+    const verifyUser = await loginCustomerDb(req);
     // console.log("Inside try login controller verifyUser: ", verifyUser.rows[0]);
     if (verifyUser.rows.length < 1) {
       return res.json({ INVALID_REQUEST });
@@ -179,8 +144,8 @@ const loginCustomer = async (req, res) => {
       },
       process.env.SECRET_KEY
     );
-    res.json({
-      status: API_STATUS_CODES.CREATED,
+
+    res.status(API_STATUS_CODES.CREATED).json({
       user: {
         id: verifyUser.rows[0].customerId,
         email: verifyUser.rows[0].email,
@@ -189,7 +154,10 @@ const loginCustomer = async (req, res) => {
       message: RESPONSE_MESSAGES.SUCCESS,
     });
   } catch (error) {
-    console.log("Login Controller Catch Error: ", error);
+    console.error(
+      new Error("User controller: Login Customer Error"),
+      error.message
+    );
   }
 };
 

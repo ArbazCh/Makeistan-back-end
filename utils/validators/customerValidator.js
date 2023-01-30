@@ -52,7 +52,8 @@ const loginValidator = async (req, res, next) => {
   }
 };
 
-const authorize = async (req, res, next) => {
+const customerAuthorize = async (req, res, next) => {
+  // console.log("val: ", req.body);
   try {
     let token = req.headers.authorization;
     // console.log(token);
@@ -61,6 +62,7 @@ const authorize = async (req, res, next) => {
     const user = jwt.verify(bearer, process.env.SECRET_KEY);
     // console.log("user:", user, "Bearer: ", bearer);
     req.user = user;
+    // console.log("user: ", user);
     next();
   } catch (err) {
     res.status(INVALID_REQUEST.status).json(INVALID_REQUEST.message);
@@ -86,6 +88,6 @@ const orderValidator = async (req, res, next) => {
 module.exports = {
   registerValidator,
   loginValidator,
-  authorize,
+  customerAuthorize,
   orderValidator,
 };

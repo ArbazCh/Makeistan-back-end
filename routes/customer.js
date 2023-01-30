@@ -12,7 +12,7 @@ const {
 const {
   registerValidator,
   loginValidator,
-  authorize,
+  customerAuthorize,
   orderValidator,
 } = require("../utils/validators/customerValidator");
 // const { authorize } = require("../utils/validators/customerValidator");
@@ -21,12 +21,12 @@ router.post("/register", registerValidator, registerCustomer);
 
 router.post("/login", loginValidator, loginCustomer);
 
-router.get("/orders", authorize, getAllOrders);
+router.get("/orders", customerAuthorize, getAllOrders);
 
-router.get("/orders/:orderId", authorize, getOrderById);
+router.get("/orders/:orderId", customerAuthorize, getOrderById);
 
-router.post("/orders/create", authorize, orderValidator, createOrder);
+router.post("/orders/create", customerAuthorize, orderValidator, createOrder);
 
-router.put("/orders/cancel/:orderId", authorize, cancelOrder);
+router.put("/orders/cancel/:orderId", customerAuthorize, cancelOrder);
 
 module.exports = router;

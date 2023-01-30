@@ -11,19 +11,22 @@ const getAllProductsDb = async ({sId}) => {
     return allProduct;
   };
   
-  const addProductDB = async ({name, description, image, unitPrice, stockQuantity, weight, 
-    subcategoryId, sellerId }) =>{
+  const addProductDB = async ({ name, description, image, unitPrice, stockQuantity, weight,
+    subcategoryId, sId}) =>{
+
   
     const addQuery = 
     
     `INSERT into "products" ("name", "description", "image", "unitPrice", 
     "stockQuantity", "weight", "subcategoryId", "sellerId")
     values ( $1, $2, $3, $4, $5, $6, $7, $8) Returning *`;
+
+    
     
     const addProduct = await pool.query( 
       
       addQuery, 
-      [name, description, image, unitPrice, stockQuantity, weight, subcategoryId, sellerId]
+      [name, description, image, unitPrice, stockQuantity, weight, subcategoryId, sId]
       
     );
   
@@ -31,11 +34,11 @@ const getAllProductsDb = async ({sId}) => {
   
   }
   
-  const getProductByIdDB = async ({paramsId}) =>{
+  const getProductDetailByIdDB = async ({paramsId, sId}) =>{
   
-    const query = `select * from "products" where "productId" = $1 `;
+    const query = `select * from "products" where "productId" = $1 AND "sellerId" = $2 `;
     
-    const getByID = await pool.query( query, [paramsId]);
+    const getByID = await pool.query( query, [paramsId, sId]);
   
     return getByID;
   
@@ -43,22 +46,21 @@ const getAllProductsDb = async ({sId}) => {
   
   const updateProductDB = async (
     {
-      name, description, image, unitPrice, stockQuantity, weight, subcategoryId, sellerId, id , sId
+      name, description, image, unitPrice, stockQuantity, weight, subcategoryId, id , sId
     }
     ) =>{
   
     const updateQuery = 
     
     `UPDATE "products" SET "name" = $1, "description" = $2, "image" = $3, "unitPrice" =$4, 
-    "stockQuantity" = $5, "weight" =$6, "subcategoryId" =$7, "sellerId" =$8
-     where "productId" = $9 AND "sellerId" =$10
+    "stockQuantity" = $5, "weight" =$6, "subcategoryId" =$7 where "productId" = $8 AND "sellerId" =$9
      RETURNING *`;
     
     const updateProduct = await pool.query(
       
       updateQuery,
-      [name, description, image, unitPrice, stockQuantity, weight, subcategoryId, sellerId, id , sId]
-      
+      [name, description, image, unitPrice, stockQuantity, weight, subcategoryId, id , sId]
+        
       );
   
     return updateProduct;
@@ -74,11 +76,37 @@ const getAllProductsDb = async ({sId}) => {
   
   }
 
+  //get all Product DB For customer
+
+  const getAllProductsForCustomerDb = async () => {
+
+    const getQuery = ` SELECT * from "products" ORDER BY "productId" ASC`;
+  
+    
+    const allProduct= await dbConfig.query( getQuery);
+  
+    return allProduct;
+  };
+
+  const getProductForCustomerByIdDB = async ({pId}) =>{
+
+    console.log("id=",pId);
+    
+    const query = `SELECT * FROM "products" where "productId" = $1 `;
+    
+    const getByID = await dbConfig.query( query, [pId]);
+  
+    return getByID;
+  
+  }
+
 
   module.exports={
     getAllProductsDb,
     addProductDB, 
     updateProductDB,
-    getProductByIdDB,
-    deleteProductByIdDB
+    getProductDetailByIdDB,
+    deleteProductByIdDB,
+    getAllProductsForCustomerDb,
+    getProductForCustomerByIdDB
   }

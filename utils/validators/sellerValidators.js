@@ -8,20 +8,18 @@ const { AUTHORIZATION_FAILED } = require("../../constants/error");
 
 require("dotenv").config();
 
-//this middleware will on continue on if the token is inside the local storage
 
 const authorize = (req, res, next) => {
     // Get token from header
-    const token = req.header("token");
+    const token = req.header("jwtToken");
   
-    // Check if not token
     if (!token) {
       return res.status(API_STATUS_CODES.AUTHORIZATION_FAILED).json(AUTHORIZATION_FAILED.message);
     }
   
-    // Verify token
+    
     try {
-      //it is going to give use the seller id (seller{Id: seller.id})
+      // Verify token
       const verify = jwt.verify(token, process.env.MY_SECRET);
   
       req.seller = verify.seller;

@@ -10,7 +10,7 @@ const {
     getAllProduct,
     updateProduct,
     deleteProduct,
-    productDetail,
+    getSellerProductDetailById,
     getAllOrders,
     getOrderById,
     completeOrder,
@@ -33,7 +33,7 @@ router.put("/product/:id", productValidations, authorize, updateProduct);
 
 router.delete("/product/:id", authorize, deleteProduct);
 
-router.get("/product/:id", authorize, productDetail); //Validate seller
+router.get("/product/:id", authorize, getSellerProductDetailById);
 
 
 //TODO unit Testing

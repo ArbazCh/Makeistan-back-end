@@ -3,8 +3,8 @@ const bcrypt = require("bcrypt");
 const { default: db } = require("node-pg-migrate/dist/db");
 const { INVALID_REQUEST } = require("../constants/error");
 const {
-    API_STATUS_CODES,
-    RESPONSE_MESSAGES,
+  API_STATUS_CODES,
+  RESPONSE_MESSAGES,
 } = require("../constants/constant");
 const {
   getAllSellersOrderDb,
@@ -12,236 +12,295 @@ const {
   sellerOrderCompleteDb,
 } = require("../repository/order.db");
 const {
-    isEmailDB,
-    signUpDB } = require("../repository/seller.db");
-  const {
-    getProductByIdDB,
-    deleteProductByIdDB,
-    addProductDB,
-    updateProductDB,
-    getAllProductsDb,
-  }=require('../repository/products.db')
+  isEmailDB,
+  signUpDB } = require("../repository/seller.db");
+const {
+  getProductDetailByIdDB,
+  deleteProductByIdDB,
+  addProductDB,
+  updateProductDB,
+  getAllProductsDb,
+  getAllProductsForCustomerDb,
+  getProductForCustomerByIdDB
+} = require('../repository/products.db')
 
 /* Sellers Controller */
 
 const sellerSignup = async (req, res) => {
-    try {
+  try {
 
 
-        const { profilePicture, email, fullName, CNIC,
-            mobileNumber, address, shopName, cnicPicture, password } = req.body;
+    const { profilePicture, email, fullName, CNIC,
+      mobileNumber, address, shopName, cnicPicture, password } = req.body;
 
-        const seller = await isEmailDB({ email });
+    const seller = await isEmailDB({ email });
 
-        if (seller.rows.length !== 0) {
-            return res.status(API_STATUS_CODES.ERROR_CODE)
-                .send(RESPONSE_MESSAGES.DUPLICATE_ENTRY);
-        }
-
-        const saltRound = 10;
-        const salt = await bcrypt.genSalt(saltRound);
-
-        const hashPassword = await bcrypt.hash(password, salt);
-
-        const newSeller = await signUpDB({
-
-            profilePicture, email, fullName, CNIC,
-            mobileNumber, address, shopName, cnicPicture, hashPassword
-
-        });
-
-        //res.json(newSeller.rows);
-
-        const token = jwtGenerator(newSeller.rows[0].sellerId);
-
-        return res.json([token, newSeller.rows]);
-
+    if (seller.rows.length !== 0) {
+      return res.status(API_STATUS_CODES.ERROR_CODE)
+        .send(RESPONSE_MESSAGES.DUPLICATE_ENTRY);
     }
 
-    catch (error) {
-        console.log(error.message);
-        res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
-    }
+    const saltRound = 10;
+    const salt = await bcrypt.genSalt(saltRound);
+
+    const hashPassword = await bcrypt.hash(password, salt);
+
+    const newSeller = await signUpDB({
+
+      profilePicture, email, fullName, CNIC,
+      mobileNumber, address, shopName, cnicPicture, hashPassword
+
+    });
+
+    //res.json(newSeller.rows);
+
+    const token = jwtGenerator(newSeller.rows[0].sellerId);
+
+    return res.json([token, newSeller.rows]);
+
+  }
+
+  catch (error) {
+    console.log(error.message);
+    res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+  }
 };
 
 
 const sellerLogin = async (req, res) => {
-    try {
-        /* Destructuring Required Data */
-        const { email, password } = req.body;
+  try {
+    /* Destructuring Required Data */
+    const { email, password } = req.body;
 
-        /**
-     * ? Existing User Check
-     */
-        const seller = await isEmailDB({ email });
-        if (seller.rows.length === 0) {
-            return res.status(401).send("Seller Does'nt Exit");
-        }
-        //res.json(seller.rows[0].password)
-
-        /* Compare Passwords */
-        const hashedPassword = await bcrypt.compare(
-            password,
-            seller.rows[0].password
-        );
-
-
-        if (!hashedPassword) {
-            return res.status(401).json("Password is incorrect");
-        }
-
-        /* JWT Token */
-
-        const token = jwtGenerator(seller.rows[0].sellerId);
-
-        res.json({ token });
-
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send("server error");
+    /**
+ * ? Existing User Check
+ */
+    const seller = await isEmailDB({ email });
+    if (seller.rows.length === 0) {
+      return res.status(401).send("Seller Does'nt Exit");
     }
+    //res.json(seller.rows[0].password)
+
+    /* Compare Passwords */
+    const hashedPassword = await bcrypt.compare(
+      password,
+      seller.rows[0].password
+    );
+
+
+    if (!hashedPassword) {
+      return res.status(401).json("Password is incorrect");
+    }
+
+    /* JWT Token */
+
+    const token = jwtGenerator(seller.rows[0].sellerId);
+
+    res.json({ token });
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("server error");
+  }
 }
 
 
 const getSellerProfile = async (req, res) => {
 
-    const sId = req.seller.id;
+  const sId = req.seller.id;
 
-    try {
+  try {
 
-        const sellerById = await getSellerByIdDB({ sId });
+    const sellerById = await getSellerByIdDB({ sId });
 
-        res.status(API_STATUS_CODES.SUCCESS).json(sellerById.rows[0]);
+    res.status(API_STATUS_CODES.SUCCESS).json(sellerById.rows[0]);
 
-    } catch (error) {
+  } catch (error) {
 
-        console.log(error.message);
-        res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
-    }
+    console.log(error.message);
+    res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+  }
 
 }
 
 /* Seller Product Controllers */
 
 const addProduct = async (req, res) => {
-    console.log("add", req.body);
 
-    const { name, description, image, unitPrice, stockQuantity, weight,
-        subcategoryId, sellerId } = req.body;
-    
-    try {
+  // change into git hub code
+  const { name, description, image, unitPrice, stockQuantity, weight,
+      subcategoryId } = req.body;
+  const sId = req.seller.id;
 
-        const newProduct = await addProductDB(
-            {
-                name, description, image, unitPrice, stockQuantity, weight,
-                subcategoryId, sellerId
-            }
-        );
+  console.log(sId);
+
+  //console.log("add front req", request);
+  try {
 
 
-        res.json(newProduct.rows[0])
+      const newProduct = await addProductDB({
+          name, description, image, unitPrice, stockQuantity, weight,
+          subcategoryId, sId
+      });
 
 
-    } catch (error) {
+      res.json(newProduct.rows[0])
 
-        res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
 
-    }
+  } catch (error) {
+
+      res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+
+  }
 
 }
 const deleteProduct = async (req, res) => {
 
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const sId = req.seller.id;
+  const sId = req.seller.id;
 
-    console.log(sId);
-    try {
+  console.log(sId);
+  try {
 
-        await deleteProductByIdDB({ id, sId })
+    await deleteProductByIdDB({ id, sId })
 
-        res.json(RESPONSE_MESSAGES.PRODUCT_DELETED);
+    res.json(RESPONSE_MESSAGES.PRODUCT_DELETED);
 
-    } catch (error) {
+  } catch (error) {
 
-        console.error(error.message);
-        res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
-    }
+    console.error(error.message);
+    res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+  }
 
 }
 
 
 const getAllProduct = async (req, res,) => {
 
-    const sId = req.seller.id;
-    console.log(sId);
-    try {
+  const sId = req.seller.id;
+  console.log(sId);
+  try {
 
-        const products = await getAllProductsDb({ sId });
+    const products = await getAllProductsDb({ sId });
 
-        if (products.rows.length === 0) {
-            return res.json("Product Not Found");
-        }
-
-        res.json(products.rows);
-
-    } catch (error) {
-
-        console.log(error.message);
-        res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+    if (products.rows.length === 0) {
+      return res.json("Product Not Found");
     }
+
+    res.json(products.rows);
+
+  } catch (error) {
+
+    console.log(error.message);
+    res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+  }
 
 }
 
 
 const updateProduct = async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const sId = req.seller.id;
+  const sId = req.seller.id;
 
-    try {
+  try {
 
-        const { name, description, image, unitPrice, stockQuantity, weight,
-            subcategoryId, sellerId } = req.body;
+    const { name, description, image, unitPrice, stockQuantity, weight,
+      subcategoryId, sellerId } = req.body;
 
-        if (`${sId === sellerId}`) {
-            await updateProductDB(
-                {
-                    name, description, image, unitPrice, stockQuantity, weight, subcategoryId, sellerId, id, sId
-                }
-
-            );
-        } else {
-            return res.json("Seller ID or Product Id is Incorrect");
+    if (`${sId === sellerId}`) {
+      await updateProductDB(
+        {
+          name, description, image, unitPrice, stockQuantity, weight, subcategoryId, sellerId, id, sId
         }
 
-        res.json(RESPONSE_MESSAGES.PRODUCT_UPDATED);
-
-    } catch (error) {
-
-        console.error(error.message);
-        res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
-
-    }
-}
-
-const productDetail = async (req, res) => {
-
-    const { productId } = req.params;
-
-    try {
-
-        const productById = await getProductByIdDB({ productId });
-
-        res.status(API_STATUS_CODES.SUCCESS).json(productById.rows);
-
-    } catch (error) {
-
-        console.log(error.message);
-        res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+      );
+    } else {
+      return res.json("Seller ID or Product Id is Incorrect");
     }
 
+    res.json(RESPONSE_MESSAGES.PRODUCT_UPDATED);
+
+  } catch (error) {
+
+    console.error(error.message);
+    res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+
+  }
 }
+
+const getSellerProductDetailById = async (req, res) => {
+
+  const { paramsId } = req.params;
+
+  const sId = req.seller.id
+
+  try {
+
+    const productById = await getProductDetailByIdDB({ paramsId, sId });
+
+    if (productById.rows.length === 0) {
+
+      return res.json("Product Not Found")
+    }
+
+    res.status(API_STATUS_CODES.SUCCESS).json(productById.rows);
+
+  } catch (error) {
+
+    console.log(error.message);
+    res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+  }
+
+}
+
+// get Products for customer
+
+const getAllProductsForCustomer = async (req, res,) => {
+
+  try {
+
+    const products = await getAllProductsForCustomerDb();
+
+    if (products.rows.length === 0) {
+      return res.json("Product Not Found");
+    }
+
+    res.json(products.rows);
+
+  } catch (error) {
+
+    console.log(error.message);
+    res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+  }
+
+}
+
+const getProductForCustomerById = async (req, res) => {
+
+  const pId = req.params.id;
+
+  console.log(req.params);
+
+  try {
+
+    const productById = await getProductForCustomerByIdDB({ pId });
+
+    if (productById.rows.length === 0) {
+      return res.json("Product Not Found")
+    } else {
+      res.json(productById.rows)
+    }
+
+  } catch (error) {
+
+    console.log(error.message);
+    res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+  }
+
+}
+
 
 const getAllOrders = async (req, res) => {
   const { id } = req.params;
@@ -307,9 +366,9 @@ const cancelOrder = async (req, res) => {
     const cancelOrder = await sellerOrderCancelDb({ orderId });
     cancelOrder.rows.length
       ? res.json({
-          status: API_STATUS_CODES.SUCCESS,
-          message: RESPONSE_MESSAGES.ORDER_CANCLLED,
-        })
+        status: API_STATUS_CODES.SUCCESS,
+        message: RESPONSE_MESSAGES.ORDER_CANCLLED,
+      })
       : res.json({ CONTROLLER_ERROR });
   } catch (err) {
     console.error(
@@ -331,5 +390,7 @@ module.exports = {
   deleteProduct,
   getAllProduct,
   updateProduct,
-  productDetail
+  getSellerProductDetailById,
+  getAllProductsForCustomer,
+  getProductForCustomerById
 };

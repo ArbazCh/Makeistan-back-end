@@ -1,6 +1,10 @@
-const express = require("express");
-const {validations, productValidations, authorize} = require("../utils/validators/sellerValidators")
 const { application } = require("express");
+const express = require("express");
+const {
+  validations,
+  productValidations,
+  sellerAuthorize,
+} = require("../utils/validators/sellerValidators");
 const router = require("express").Router();
 const {
     sellerSignup,
@@ -21,28 +25,38 @@ const {
 
 router.post('/signup', validations, sellerSignup);
 
-router.post('/login',authorize,  sellerLogin);
 
-router.get("/sellerProfile", authorize, getSellerProfile);
+router.post("/signup", validations, sellerSignup);
 
-router.get("/product" , authorize, getAllProduct);
+router.post("/login", sellerAuthorize, sellerLogin);
 
-router.post("/product/addProduct", productValidations,authorize,addProduct);
+router.get("/sellerProfile", sellerAuthorize, getSellerProfile);
 
-router.put("/product/:id", productValidations, authorize, updateProduct);
+router.get("/product", sellerAuthorize, getAllProduct);
 
-router.delete("/product/:id", authorize, deleteProduct);
+router.post(
+  "/product/addProduct",
+  productValidations,
+  sellerAuthorize,
+  addProduct
+);
+
+router.put("/product/:id", productValidations, sellerAuthorize, updateProduct);
 
 router.get("/product/:id", authorize, getSellerProductDetailById);
 
+router.delete("/product/:id", sellerAuthorize, deleteProduct);
+
+
+router.get("/product/:id", sellerAuthorize, productDetail); //Validate seller
 
 //TODO unit Testing
-router.get("/orders", authorize, getAllOrders);
+router.get("/orders", sellerAuthorize, getAllOrders);
 
-router.get("/order/:orderId", authorize, getOrderById);
+router.get("/order/:orderId", sellerAuthorize, getOrderById);
 
-router.put("/order/complete/:orderId", authorize, completeOrder);
+router.put("/order/complete/:orderId", sellerAuthorize, completeOrder);
 
-router.put("/orders/cancel/:orderId", authorize, cancelOrder);
+router.put("/orders/cancel/:orderId", sellerAuthorize, cancelOrder);
 
 module.exports = router;

@@ -10,6 +10,11 @@ const {
 } = require("../controllers/customerController");
 
 const {
+  getAllProductsForCustomer,
+  getProductForCustomerById 
+} = require("../controllers/sellerController");
+
+const {
   registerValidator,
   loginValidator,
   customerAuthorize,
@@ -28,5 +33,9 @@ router.get("/orders/:orderId", customerAuthorize, getOrderById);
 router.post("/orders/create", customerAuthorize, orderValidator, createOrder);
 
 router.put("/orders/cancel/:orderId", customerAuthorize, cancelOrder);
+
+router.get("/product" ,customerAuthorize, getAllProductsForCustomer);
+
+router.get("/product/:id", getProductForCustomerById );
 
 module.exports = router;

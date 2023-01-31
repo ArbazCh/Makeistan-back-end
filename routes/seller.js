@@ -7,19 +7,24 @@ const {
 } = require("../utils/validators/sellerValidators");
 const router = require("express").Router();
 const {
-  sellerSignup,
-  sellerLogin,
-  getSellerProfile,
-  addProduct,
-  getAllProduct,
-  updateProduct,
-  deleteProduct,
-  productDetail,
-  getAllOrders,
-  getOrderById,
-  completeOrder,
-  cancelOrder,
-} = require("../controllers/sellerController");
+    sellerSignup,
+    sellerLogin,
+    getSellerProfile,
+    addProduct,
+    getAllProduct,
+    updateProduct,
+    deleteProduct,
+    getSellerProductDetailById,
+    getAllOrders,
+    getOrderById,
+    completeOrder,
+    cancelOrder,
+    }
+     = require("../controllers/sellerController");
+
+
+router.post('/signup', validations, sellerSignup);
+
 
 router.post("/signup", validations, sellerSignup);
 
@@ -38,7 +43,10 @@ router.post(
 
 router.put("/product/:id", productValidations, sellerAuthorize, updateProduct);
 
+router.get("/product/:id", authorize, getSellerProductDetailById);
+
 router.delete("/product/:id", sellerAuthorize, deleteProduct);
+
 
 router.get("/product/:id", sellerAuthorize, productDetail); //Validate seller
 

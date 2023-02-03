@@ -8,7 +8,7 @@ const jwtgenerator = (customerId) =>{
 const payload = {
     user : customerId
 }
-return jwt.sign(payload, secret, {expiresIn : "1hr"})
+return jwt.sign(payload, secret,)
 }
 
 module.exports = {jwtgenerator};

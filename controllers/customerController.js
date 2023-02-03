@@ -1,12 +1,29 @@
-const {registerCustomerDb, loginCustomerDb}=require('../repository/customer.db')
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const {jwtgenerator}=require('../utils/jwtgen')
+const {
+  registerCustomerDb,
+  loginCustomerDb, forgetPDb}=require('../repository/customer.db')
+const {
+  API_STATUS_CODES,
+  RESPONSE_MESSAGES,
+} = require("../constants/constant");
+const { 
+  CONTROLLER_ERROR, 
+  INVALID_REQUEST } = require("../constants/error");
+const {
+  getAllOrderDb,
+  getOrderByIdDb,
+  creatOrderDb,
+  cancelOrderDb,
+} = require("../repository/order.db");
 
 const registerCustomer=async (req, res) => {
-   
-      // destructuring every data......
-      const {  email, password, firstName, lastName, address } =
-        req.body;
+  console.log("BE Req",req.body)
+
+      const body =req.body;
         try {
-      const user = await registerCustomerDb({ email, password, firstName, lastName, address}) 
+      const user = await registerCustomerDb(body) 
       // console.log(user)
       if (user) res.status(200).json({message: "User Added Successfully"})
   }catch(error){
@@ -16,35 +33,53 @@ const registerCustomer=async (req, res) => {
 }
   const loginCustomer= async (req, res) => {
     try {
-      //destructuring required data
       const { email, password } = req.body;
       //checking user existance
       const user = await loginCustomerDb({ email, password })
-    }catch(error){
-    console.error(error.message);
-    res.status(500).send("server error");
+
+      if(user){
+        const hashedPassword = await bcrypt.compare(
+          password,
+          user.rows[0].password
+        );
+      //   console.log(hashedPassword) 
+        if (!hashedPassword) {
+          return res.status(401).json("Password is incorrect");
+        }  
+        //  jwt token
+        const token = jwtgenerator(user.rows[0].customerId);
+        res.json({ 
+          jwtToken:token, 
+          message: "user added successfully" });
+      } 
+    }catch (error) {
+      console.error(error.message);
+          res.status(500).send("server error");}
   }
-}
-
-  module.exports={registerCustomer,loginCustomer}
-const {
-  API_STATUS_CODES,
-  RESPONSE_MESSAGES,
-} = require("../constants/constant");
-const { CONTROLLER_ERROR, INVALID_REQUEST } = require("../constants/error");
-const {
-  getAllOrderDb,
-  getOrderByIdDb,
-  creatOrderDb,
-  cancelOrderDb,
-} = require("../repository/order.db");
-const {
-  registerCustomerDb,
-  loginCustomerDb,
-} = require("../repository/customer.db");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-
+  const forgetP = async (req, res) =>{
+    try {
+      const {email, newpassword} = req.body;
+      console.log(req.body);
+        //checking if user exists
+      const user = await forgetPDb({ email,newpassword });
+  
+      if(user){
+         return res.json({message:"Password Updated"})
+        
+           }else{
+            return res.status(500).send("email not found")
+           }
+  //  if(user){
+  //   res.json("password updated")
+  //  }
+  //  res.json("user does not exist")
+      
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send("server error");
+      
+    }
+  }
 const getAllOrders = async (req, res) => {
   const { id } = req.user;
   try {
@@ -146,6 +181,21 @@ const cancelOrder = async (req, res) => {
   // console.log("Hello1", cancelOrder);
 };
 
+
+
+module.exports = {
+  getAllOrders,
+  getOrderById,
+  createOrder,
+  cancelOrder,
+  registerCustomer,
+  loginCustomer,
+  forgetP
+};
+// const {
+//   registerCustomerDb,
+//   loginCustomerDb,
+// } = require("../repository/customer.db");
 // const registerCustomer = async (req, res) => {
 //   try {
 //     // console.log("In reg customer", registerCustomer);
@@ -222,11 +272,4 @@ const cancelOrder = async (req, res) => {
 //   }
 // };
 
-module.exports = {
-  getAllOrders,
-  getOrderById,
-  createOrder,
-  cancelOrder,
-  registerCustomer,
-  loginCustomer,
-};
+

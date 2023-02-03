@@ -21,37 +21,40 @@ const registerCustomerDb=async (data)=>{
           //    tokenization................
           return result   
 } 
-const loginCustomerDb=async ({data})=>{
-    const { email, password } = data;
-    try {
-        const query=`SELECT * FROM users WHERE email = $1`
+const loginCustomerDb=async (data)=>{
+    const { email } = data;
+
+    const query=`SELECT * FROM users WHERE email = $1`
     const user = await dbConfig.query(query, [
         email,
       ]);
       if (user.rows.length === 0) {
-        return res.status(401).send("Email does not exist");
+        return []
       } 
-      // compare passwords
-      const hashedPassword = await bcrypt.compare(
-        password,
-        user.rows[0].password
-      );
-    //   console.log(hashedPassword) 
-      if (!hashedPassword) {
-        return res.status(401).json("Password is incorrect");
-      }  
-      //  jwt token
-      const token = jwtgenerator(user.rows[0].customerId);
-      res.json({ token });
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send("server error");
-    }
+      return user
     
-} 
+}
+const forgetPDb = async ({email,newpassword}) =>{
+
+  const query=`SELECT * FROM users WHERE email = '${email}'`
+  console.log(query);
+    const user = await dbConfig.query(query);
+if(user.rows===0){
+  return []
+}
+const saltRounds = 10;
+const hashedPassword = await bcrypt.hash(newpassword, saltRounds);      
+const update=`UPDATE users
+SET password = $1
+WHERE email = $2`
+const result = await dbConfig.query(update, [ hashedPassword, email
+])
+ return result;
+               
+}
 
 
-module.exports={registerCustomerDb,loginCustomerDb}
+module.exports={registerCustomerDb,loginCustomerDb, forgetPDb }
 
 // const registerCustomerDb = async (info) => {
 //   try {

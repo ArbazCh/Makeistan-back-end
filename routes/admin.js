@@ -1,6 +1,10 @@
-const { application } = require("express");
+const express = require("express");
 const router = require("express").Router();
-const { authorize } = require("../utils/validators/customerValidator");
+const { application } = require("express");
+const { customerAuthorize } = require("../utils/validators/customerValidator");
+const { sellerAuthorize } = require("../utils/validators/sellerValidators");
+
+const { getAllSellers } = require("../controllers/adminController"); //TODO
 const {
   getAllCategories,
   getCategoryById,
@@ -23,10 +27,12 @@ module.exports = router;
 
 //TODO unit Testing
 
-router.get("/orders", authorize, getAllOrders);
+router.get("/orders", getAllOrders);
 
-router.get("/orders/:orderId", authorize, getOrdersBySellerId);
+router.get("/orders/:orderId", sellerAuthorize, getOrdersBySellerId);
 
-router.get("/orders/:orderId", authorize, getOrdersByCustomerId);
+router.get("/orders/:orderId", customerAuthorize, getOrdersByCustomerId);
+
+router.get("/", getAllSellers);
 
 module.exports = router;

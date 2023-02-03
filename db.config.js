@@ -11,4 +11,13 @@ const dbConfig = new Pool({
     database : process.env.DATABASE,
 });
 
+<<<<<<< HEAD
 module.exports = dbConfig;
+=======
+pool.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
+
+module.exports = pool;
+>>>>>>> db75deaf69a97a3fe784a863fce7486d8b62e3cc

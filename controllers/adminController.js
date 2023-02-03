@@ -1,15 +1,21 @@
+const { 
+  loginAdminDb,
+   } = require("../repository/admin.db");
 const {
-  API_STATUS_CODES,
-  RESPONSE_MESSAGES,
+    API_STATUS_CODES,
+    RESPONSE_MESSAGES,
 } = require("../constants/constant");
-const { CONTROLLER_ERROR, INVALID_REQUEST } = require("../constants/error");
-
+const { 
+  CONTROLLER_ERROR, 
+  INVALID_REQUEST } = require("../constants/error");
 const {
   getAllAdminOrdersDb,
   getAdminSellerOrdersByIDDb,
   getAdminCustomerOrdersByIDDb,
+  
 } = require("../repository/order.db");
-const { loginAdminDb } = require("../repository/admin.db");
+const {getAllSellersDb}=require('../repository/seller.db')
+
 
 const getAllOrders = async (req, res) => {
   try {
@@ -172,6 +178,25 @@ const loginAdmin = async (req, res) => {
   }
 };
 
+const getAllSellers = async (req, res) => {
+
+
+  try {
+
+      const sellers = await getAllSellersDb();
+
+      res.json(sellers.rows);
+
+      console.log(sellers.rows)
+
+  } catch (error) {
+
+      console.log(error.message);
+      res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+  }
+
+}
+
 module.exports = {
   getAllOrders,
   getOrdersBySellerId,
@@ -181,4 +206,5 @@ module.exports = {
   UpdateCategoryById,
   CreateCategory,
   loginAdmin,
+  getAllSellers
 };

@@ -1,17 +1,23 @@
 const dbConfig = require("../db.config");
 
 //get All orders for test onlny
-const getAllOrderDb = async ({ id }) => {
-  return await dbConfig.query(`SELECT * FROM "orders" WHERE "customerId"=$1`, [
-    id,
-  ]);
+const getAllOrderDb = async (req) => {
+  const { id } = req.user;
+  const result = await dbConfig.query(
+    `SELECT * FROM "orders" WHERE "customerId"=$1`,
+    [id]
+  );
+  if (result.rows === 0) return [];
+  return result;
 };
 
 //Get order by id
-const getOrderByIdDb = async ({ orderId, id }) => {
+const getOrderByIdDb = async (req) => {
+  const { orderId } = req.params;
+  const { id } = req.user;
+  // console.log(req.user, id);
   // console.log("orderId: ", orderId, "customerd", id);
   const query = `SELECT * FROM "orders" WHERE "customerId"=$1 AND "orderId"=$2`;
-  //`
   // SELECT  o."orderId", oi."orderNumber",u."customerId",p."name",p."unitPrice",o."orderStatus",oi."quantity"
   // FROM users as u
   // INNER JOIN orders as o
@@ -23,35 +29,28 @@ const getOrderByIdDb = async ({ orderId, id }) => {
   //   WHERE o."orderId"=$1 AND u."customerId"=$2
   // `;
 
-  const first = await dbConfig.query(query, [id, orderId]); // return the result
+  const result = await dbConfig.query(query, [id, orderId]); // return the result
   // console.log(first.rows);
-  return first;
+  if (result.rows === 0) return [];
+  return result;
 };
-
 //Create order against the customer id
 
 //!!!How to insert in order item table if there are more than one product id's
-const creatOrderDb = async ({
-  id,
-  productId, //it can b array of multiple values???? To do
-  quantity,
-  paymentId,
-  date,
-  time,
-  orderStatus,
-  sellerId,
-  orderNumber,
-}) => {
-  //INSERT INTO ORDER TABLE
-  const insertOrder = `INSERT INTO orders("customerId","paymentId","date","time","orderStatus") VALUES($1,$2,$3,$4,$5) RETURNING "orderId"`;
+const creatOrderDb = async (req) => {
+  const { id } = req.user; //customerId
+  // console.log("ID: ", id);
+  const { productId, quantity, date, sellerId, orderNumber, totalPrice } =
+    req.body;
+  const insertOrder = `INSERT INTO orders("customerId","paymentId","date","orderStatus","totalPrice") VALUES($1,$2,$3,$4,$5) RETURNING *`;
   const order = await dbConfig.query(insertOrder, [
     id,
-    paymentId,
+    "1",
     date,
-    time,
-    orderStatus,
+    "Pending",
+    totalPrice,
   ]);
-  // console.log(order.rows[0].orderId);
+  // console.log("orders: ", order.rows);
   const orderId = order.rows[0].orderId;
   // INSERT INTO ORDER ITEM TABLE
   const insertorderItem = `INSERT INTO "orderItem"("orderId","productId","sellerId","orderNumber","quantity") VALUES ($1,$2,$3,$4,$5) RETURNING*`;
@@ -62,14 +61,21 @@ const creatOrderDb = async ({
     orderNumber,
     quantity,
   ]);
+  // console.log("Order: ", item);
+  if (item.rows === 0) return [];
   return { order, item };
 };
 
 //Cancel order Db
-const cancelOrderDb = async ({ id, orderId }) => {
+const cancelOrderDb = async (req) => {
+  const { id } = req.user;
+  const { orderId } = req.params;
+  // console.log(id, orderId);
   // console.log("Cancel order Db");
   const query = `UPDATE "orders" SET "orderStatus"='Cancelled' WHERE "customerId"=$1 AND "orderId"=$2 RETURNING *`;
-  return await dbConfig.query(query, [id, orderId]);
+  const result = await dbConfig.query(query, [id, orderId]);
+  if (result.rows === 0) return [];
+  return result;
 };
 
 const getAllSellersOrderDb = async ({ id }) => {

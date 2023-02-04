@@ -90,7 +90,7 @@ const cancelOrder = async (req, res) => {
 
 const registerCustomer = async (req, res) => {
   try {
-    // console.log("In reg customer", registerCustomer);
+    // console.log("In reg customer", req.body);
     const createdUser = await registerCustomerDb(req);
     // console.log("Register Controller: ", createdUser);
     createdUser
@@ -132,6 +132,7 @@ const loginCustomer = async (req, res) => {
     );
     // console.log("Matched Password : ", matchPassword);
     if (!matchPassword) {
+      // console.log("Not Matched");
       return res.json({ INVALID_REQUEST });
     }
     /**

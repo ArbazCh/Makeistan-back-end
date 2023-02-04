@@ -1,22 +1,98 @@
+<<<<<<< HEAD
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const {jwtgenerator}=require('../utils/jwtgen')
+const {
+  registerCustomerDb,
+  loginCustomerDb, forgetPDb}=require('../repository/customer.db')
+=======
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+>>>>>>> db75deaf69a97a3fe784a863fce7486d8b62e3cc
 const {
   API_STATUS_CODES,
   RESPONSE_MESSAGES,
 } = require("../constants/constant");
-const { CONTROLLER_ERROR, INVALID_REQUEST } = require("../constants/error");
+const { 
+  CONTROLLER_ERROR, 
+  INVALID_REQUEST } = require("../constants/error");
 const {
   getAllOrderDb,
   getOrderByIdDb,
   creatOrderDb,
   cancelOrderDb,
 } = require("../repository/order.db");
+<<<<<<< HEAD
+=======
 const {
   registerCustomerDb,
   loginCustomerDb,
 } = require("../repository/customer.db");
+>>>>>>> db75deaf69a97a3fe784a863fce7486d8b62e3cc
 
+const registerCustomer=async (req, res) => {
+  console.log("BE Req",req.body)
+
+      const body =req.body;
+        try {
+      const user = await registerCustomerDb(body) 
+      // console.log(user)
+      if (user) res.status(200).json({message: "User Added Successfully"})
+  }catch(error){
+    console.error(error.message);
+    res.status(500).send("User Already Exist");
+  }
+}
+  const loginCustomer= async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      //checking user existance
+      const user = await loginCustomerDb({ email, password })
+
+      if(user){
+        const hashedPassword = await bcrypt.compare(
+          password,
+          user.rows[0].password
+        );
+      //   console.log(hashedPassword) 
+        if (!hashedPassword) {
+          return res.status(401).json("Password is incorrect");
+        }  
+        //  jwt token
+        const token = jwtgenerator(user.rows[0].customerId);
+        res.json({ 
+          jwtToken:token, 
+          message: "user added successfully" });
+      } 
+    }catch (error) {
+      console.error(error.message);
+          res.status(500).send("server error");}
+  }
+  const forgetP = async (req, res) =>{
+    try {
+      const {email, newpassword} = req.body;
+      console.log(req.body);
+        //checking if user exists
+      const user = await forgetPDb({ email,newpassword });
+  
+      if(user){
+         return res.json({message:"Password Updated"})
+        
+           }else{
+            return res.status(500).send("email not found")
+           }
+  //  if(user){
+  //   res.json("password updated")
+  //  }
+  //  res.json("user does not exist")
+      
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send("server error");
+      
+    }
+  }
 const getAllOrders = async (req, res) => {
   try {
     const orders = await getAllOrderDb(req);
@@ -88,6 +164,9 @@ const cancelOrder = async (req, res) => {
   // console.log("Hello1", cancelOrder);
 };
 
+<<<<<<< HEAD
+
+=======
 const registerCustomer = async (req, res) => {
   try {
     // console.log("In reg customer", registerCustomer);
@@ -160,6 +239,7 @@ const loginCustomer = async (req, res) => {
     );
   }
 };
+>>>>>>> db75deaf69a97a3fe784a863fce7486d8b62e3cc
 
 module.exports = {
   getAllOrders,
@@ -168,4 +248,86 @@ module.exports = {
   cancelOrder,
   registerCustomer,
   loginCustomer,
+  forgetP
 };
+// const {
+//   registerCustomerDb,
+//   loginCustomerDb,
+// } = require("../repository/customer.db");
+// const registerCustomer = async (req, res) => {
+//   try {
+//     // console.log("In reg customer", registerCustomer);
+//     const { email, password, firstName, lastName, address } = req.body;
+//     const createdUser = await registerCustomerDb({
+//       email,
+//       password,
+//       firstName,
+//       lastName,
+//       address,
+//     });
+//     // console.log("Register Controller: ", createdUser);
+//     createdUser
+//       ? res.json({
+//           status: API_STATUS_CODES.SUCCESS,
+//           message: RESPONSE_MESSAGES.SUCCESS,
+//           body: createdUser,
+//         })
+//       : res.json(CONTROLLER_ERROR);
+//   } catch (error) {
+//     if (error.code === API_STATUS_CODES.DUPLICATE_ENTRY) {
+//       return res.json({
+//         status: API_STATUS_CODES.ERROR_CODE,
+//         message: RESPONSE_MESSAGES.DUPLICATE_ENTRY,
+//       });
+//     }
+//     console.log("Catch Error: ", error);
+//   }
+// };
+// const loginCustomer = async (req, res) => {
+//   const { email, password } = req.body;
+//   try {
+//     /**
+//      * ? Existing User Check
+//      */
+
+//     const verifyUser = await loginCustomerDb({ email });
+//     // console.log("Inside try login controller verifyUser: ", verifyUser.rows[0]);
+//     if (verifyUser.rows.length < 1) {
+//       return res.json({ INVALID_REQUEST });
+//     }
+//     /**
+//      * Compare entered Password with hashed password in the db
+//      */
+//     const matchPassword = await bcrypt.compare(
+//       password,
+//       verifyUser.rows[0].password
+//     );
+//     // console.log("Matched Password : ", matchPassword);
+//     if (!matchPassword) {
+//       return res.json({ INVALID_REQUEST });
+//     }
+//     /**
+//      * Return JWT Token
+//      */
+//     const token = await jwt.sign(
+//       {
+//         id: verifyUser.rows[0].customerId,
+//         email: verifyUser.rows[0].email,
+//       },
+//       process.env.SECRET_KEY
+//     );
+//     res.json({
+//       status: API_STATUS_CODES.CREATED,
+//       user: {
+//         id: verifyUser.rows[0].customerId,
+//         email: verifyUser.rows[0].email,
+//       },
+//       token: token,
+//       message: RESPONSE_MESSAGES.SUCCESS,
+//     });
+//   } catch (error) {
+//     console.log("Login Controller Catch Error: ", error);
+//   }
+// };
+
+

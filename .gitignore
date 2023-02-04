@@ -1,4 +1,5 @@
-.env
 node_modules
+.env
 package-lock.json
+node_modules
 Queries -Solutions.txt

@@ -1,17 +1,17 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
-const {jwtgenerator}=require('../utils/jwtgen')
+const { jwtgenerator } = require("../utils/jwtgen");
 const {
   registerCustomerDb,
-  loginCustomerDb, forgetPDb}=require('../repository/customer.db')
+  loginCustomerDb,
+  forgetPDb,
+} = require("../repository/customer.db");
 const {
   API_STATUS_CODES,
   RESPONSE_MESSAGES,
 } = require("../constants/constant");
-const { 
-  CONTROLLER_ERROR, 
-  INVALID_REQUEST } = require("../constants/error");
+const { CONTROLLER_ERROR, INVALID_REQUEST } = require("../constants/error");
 const {
   getAllOrderDb,
   getOrderByIdDb,
@@ -19,69 +19,70 @@ const {
   cancelOrderDb,
 } = require("../repository/order.db");
 
+const registerCustomer = async (req, res) => {
+  // console.log("BE Req", req.body);
 
-const registerCustomer=async (req, res) => {
-  console.log("BE Req",req.body)
-
-      const body =req.body;
-        try {
-      const user = await registerCustomerDb(body) 
-      // console.log(user)
-      if (user) res.status(200).json({message: "User Added Successfully"})
-  }catch(error){
+  const body = req.body;
+  try {
+    const user = await registerCustomerDb(body);
+    // console.log(user)
+    if (user) res.status(200).json({ message: "User Added Successfully" });
+  } catch (error) {
     console.error(error.message);
     res.status(500).send("User Already Exist");
   }
-}
-  const loginCustomer= async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      //checking user existance
-      const user = await loginCustomerDb({ email, password })
+};
+const loginCustomer = async (req, res) => {
+  // console.log("Req: ", req.body);
+  try {
+    const { email, password } = req.body;
+    //checking user existance
+    const user = await loginCustomerDb({ email, password });
+    // console.log("res: ", user.rows);
 
-      if(user){
-        const hashedPassword = await bcrypt.compare(
-          password,
-          user.rows[0].password
-        );
-      //   console.log(hashedPassword) 
-        if (!hashedPassword) {
-          return res.status(401).json("Password is incorrect");
-        }  
-        //  jwt token
-        const token = jwtgenerator(user.rows[0].customerId);
-        res.json({ 
-          jwtToken:token, 
-          message: "user added successfully" });
-      } 
-    }catch (error) {
-      console.error(error.message);
-          res.status(500).send("server error");}
-  }
-  const forgetP = async (req, res) =>{
-    try {
-      const {email, newpassword} = req.body;
-      console.log(req.body);
-        //checking if user exists
-      const user = await forgetPDb({ email,newpassword });
-  
-      if(user){
-         return res.json({message:"Password Updated"})
-        
-           }else{
-            return res.status(500).send("email not found")
-           }
-  //  if(user){
-  //   res.json("password updated")
-  //  }
-  //  res.json("user does not exist")
-      
-    } catch (error) {
-      console.error(error.message);
-      res.status(500).send("server error");
-      
+    if (user) {
+      const hashedPassword = await bcrypt.compare(
+        password,
+        user.rows[0].password
+      );
+      // console.log(hashedPassword);
+      if (!hashedPassword) {
+        return res.status(401).json("Password is incorrect");
+      }
+      //  jwt token
+      const token = jwtgenerator(user.rows[0].customerId);
+      res.json({
+        jwtToken: token,
+        user: user.rows,
+        message: "user added successfully",
+      });
     }
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("server error");
   }
+};
+const forgetP = async (req, res) => {
+  try {
+    const { email, newpassword } = req.body;
+    console.log(req.body);
+    //checking if user exists
+    const user = await forgetPDb({ email, newpassword });
+
+    if (user) {
+      return res.json({ message: "Password Updated" });
+    } else {
+      return res.status(500).send("email not found");
+    }
+    //  if(user){
+    //   res.json("password updated")
+    //  }
+    //  res.json("user does not exist")
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("server error");
+  }
+};
 const getAllOrders = async (req, res) => {
   try {
     const orders = await getAllOrderDb(req);
@@ -153,7 +154,6 @@ const cancelOrder = async (req, res) => {
   // console.log("Hello1", cancelOrder);
 };
 
-
 module.exports = {
   getAllOrders,
   getOrderById,
@@ -161,14 +161,14 @@ module.exports = {
   cancelOrder,
   registerCustomer,
   loginCustomer,
-  forgetP
+  forgetP,
 };
 // const {
-  //   registerCustomerDb,
-  //   loginCustomerDb,
-  // } = require("../repository/customer.db");
-  // const registerCustomer = async (req, res) => {
-    //   try {
+//   registerCustomerDb,
+//   loginCustomerDb,
+// } = require("../repository/customer.db");
+// const registerCustomer = async (req, res) => {
+//   try {
 //     // console.log("In reg customer", registerCustomer);
 //     const { email, password, firstName, lastName, address } = req.body;
 //     const createdUser = await registerCustomerDb({
@@ -315,5 +315,3 @@ module.exports = {
 //     );
 //   }
 // };
-
-

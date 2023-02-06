@@ -40,15 +40,15 @@ const getAllSellersDb = async () => {
   return allSellers;
 
 };
-// const getSellerByIdDB = async ({sId}) =>{
+const getSellerByIdDB = async ({sId}) =>{
 
-//   const query = `select * from "sellers" where "sellerId" = $1 `;
+  const query = `select * from "sellers" where "sellerId" = $1 `;
   
-//   const getByID = await pool.query( query, [sId]);
+  const getByID = await pool.query( query, [sId]);
 
-//   return getByID;
+  return getByID;
 
-// }
+}
 
 
 
@@ -57,4 +57,5 @@ module.exports = {
     signUpDB,
     isEmailDB,
     getAllSellersDb,
+    getSellerByIdDB
   };

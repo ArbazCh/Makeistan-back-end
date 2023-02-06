@@ -36,6 +36,6 @@ router.put("/orders/cancel/:orderId", customerAuthorize, cancelOrder);
 
 router.get("/product" ,customerAuthorize, getAllProductsForCustomer);
 
-router.get("/product/:id", getProductForCustomerById );
+router.get("/product/:id", customerAuthorize, getProductForCustomerById );
 
 module.exports = router;

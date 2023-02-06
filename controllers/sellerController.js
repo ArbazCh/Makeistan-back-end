@@ -13,7 +13,9 @@ const {
 } = require("../repository/order.db");
 const {
   isEmailDB,
-  signUpDB } = require("../repository/seller.db");
+  signUpDB,
+  getAllSellersDb,
+  getSellerByIdDB } = require("../repository/seller.db");
 const {
   getProductDetailByIdDB,
   deleteProductByIdDB,
@@ -51,12 +53,12 @@ const sellerSignup = async (req, res) => {
       mobileNumber, address, shopName, cnicPicture, hashPassword
 
     });
-
-    //res.json(newSeller.rows);
-
-    const token = jwtGenerator(newSeller.rows[0].sellerId);
-
-    return res.json([token, newSeller.rows]);
+    //console.log("data",newSeller.rows)
+    if (newSeller.rows.length !== 0) {
+      res.json(newSeller.rows);
+    } else {
+      res.json("Something Went Wrong");
+    };
 
   }
 
@@ -96,7 +98,8 @@ const sellerLogin = async (req, res) => {
 
     const token = jwtGenerator(seller.rows[0].sellerId);
 
-    res.json({ token });
+    // console.log("logintoken: ", token);
+    res.json({ jwtToken: token , id:seller.rows[0]?.sellerId});
 
   } catch (error) {
     console.error(error.message);
@@ -123,13 +126,38 @@ const getSellerProfile = async (req, res) => {
 
 }
 
+const getAllSellers = async (req, res) => {
+
+
+  try {
+
+      const sellers = await getAllSellersDb();
+      //console.log(sellers.rows)
+
+      if(sellers.length !==0 ){
+          return res.json(sellers.rows);
+      }else{
+          res.json("No Seller Found")
+      }
+
+      
+
+  } catch (error) {
+
+      console.log(error.message);
+      res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+  }
+
+}
+
+
 /* Seller Product Controllers */
 
 const addProduct = async (req, res) => {
 
   // change into git hub code
   const { name, description, image, unitPrice, stockQuantity, weight,
-      subcategoryId } = req.body;
+    subcategoryId } = req.body;
   const sId = req.seller.id;
 
   console.log(sId);
@@ -138,18 +166,18 @@ const addProduct = async (req, res) => {
   try {
 
 
-      const newProduct = await addProductDB({
-          name, description, image, unitPrice, stockQuantity, weight,
-          subcategoryId, sId
-      });
+    const newProduct = await addProductDB({
+      name, description, image, unitPrice, stockQuantity, weight,
+      subcategoryId, sId
+    });
 
 
-      res.json(newProduct.rows[0])
+    res.json(newProduct.rows[0])
 
 
   } catch (error) {
 
-      res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+    res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
 
   }
 
@@ -243,9 +271,9 @@ const getSellerProductDetailById = async (req, res) => {
     if (productById.rows.length === 0) {
 
       return res.json("Product Not Found")
+    }else{
+      res.status(API_STATUS_CODES.SUCCESS).json(productById.rows);
     }
-
-    res.status(API_STATUS_CODES.SUCCESS).json(productById.rows);
 
   } catch (error) {
 
@@ -265,9 +293,9 @@ const getAllProductsForCustomer = async (req, res,) => {
 
     if (products.rows.length === 0) {
       return res.json("Product Not Found");
+    }else{
+      res.json(products.rows);
     }
-
-    res.json(products.rows);
 
   } catch (error) {
 
@@ -386,6 +414,7 @@ module.exports = {
   sellerSignup,
   sellerLogin,
   getSellerProfile,
+  getAllSellers,
   addProduct,
   deleteProduct,
   getAllProduct,

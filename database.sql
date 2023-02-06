@@ -192,6 +192,9 @@ INSERT INTO "admin" ("name","loginId","password" ) VALUES ('Musharib','122345','
 ALTER TABLE "sellers"
 ADD "password" VARCHAR;
 
+ALTER TABLE "sellers"
+ALTER COLUMN "cnicPicture" TYPE VARCHAR;
+
 
 ALTER TABLE "orders" ADD COLUMN "totalPrice" INT;
 ALTER TABLE "orders" DROP COLUMN "time";

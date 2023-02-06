@@ -90,7 +90,7 @@ const getAllProductsDb = async ({sId}) => {
 
   const getProductForCustomerByIdDB = async ({pId}) =>{
 
-    console.log("id=",pId);
+    //console.log("id=",pId);
     
     const query = `SELECT * FROM "products" where "productId" = $1 `;
     

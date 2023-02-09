@@ -65,7 +65,7 @@ const loginCustomer = async (req, res) => {
 const forgetP = async (req, res) => {
   try {
     const { email, newpassword } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     //checking if user exists
     const user = await forgetPDb({ email, newpassword });
 
@@ -117,19 +117,24 @@ const getOrderById = async (req, res) => {
 };
 
 const createOrder = async (req, res) => {
-  console.log("req: ", req.body);
+  // console.log("req: ", req.body);
 
   try {
     const createOrder = await creatOrderDb(req);
-    // console.log(createOrder);
-    createOrder
+    // console.log("create order", createOrder.order.rows);
+    createOrder.order
       ? res.status(API_STATUS_CODES.SUCCESS).json({
           message: RESPONSE_MESSAGES.ORDER_CREATED,
           body: createOrder,
+          status: API_STATUS_CODES.SUCCESS,
         })
-      : res.json({ INVALID_REQUEST });
+      : res.status(CONTROLLER_ERROR.status).json({
+          message: CONTROLLER_ERROR.message,
+          status: CONTROLLER_ERROR.status,
+        });
     // console.log("Im here");
   } catch (err) {
+    // console.log("Im here");
     console.error(
       new Error("Customer controller: Create Order Error"),
       err.message

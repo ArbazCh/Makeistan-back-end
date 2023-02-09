@@ -63,6 +63,7 @@ const creatOrderDb = async (req) => {
   ]);
   // console.log("Order: ", item);
   if (item.rows === 0) return [];
+  if (order.rows === 0) return [];
   return { order, item };
 };
 

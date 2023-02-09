@@ -1,6 +1,9 @@
 const validator = require("validator");
 const { encryptPassword } = require("../utils");
-const { INVALID_REQUEST } = require("../../constants/error");
+const {
+  INVALID_REQUEST,
+  AUTHORIZATION_FAILED,
+} = require("../../constants/error");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
@@ -53,20 +56,24 @@ const loginValidator = async (req, res, next) => {
 };
 
 const customerAuthorize = async (req, res, next) => {
-  // console.log("val: ", req.body);
+  // console.log("order Body: ", req.body);
   try {
     let token = req.headers.authorization;
-    // console.log(token);
+    // console.log("Token: ", token);
     if (!token) return res.json(INVALID_REQUEST);
     const bearer = token.split(" ")[1];
+    // console.log("Token", bearer);
     const user = jwt.verify(bearer, process.env.SECRET_KEY);
-    // console.log("user:", user, "Bearer: ", bearer);
+    console.log("user:", user);
     req.user = user;
     // console.log("user: ", user);
     next();
   } catch (err) {
-    res.status(INVALID_REQUEST.status).json(INVALID_REQUEST.message);
     console.error(new Error("auth catch error: "), err.message);
+    return res.status(AUTHORIZATION_FAILED.status).json({
+      message: AUTHORIZATION_FAILED.message,
+      status: AUTHORIZATION_FAILED.status,
+    });
   }
 };
 

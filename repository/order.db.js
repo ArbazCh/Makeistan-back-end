@@ -39,12 +39,13 @@ const getOrderByIdDb = async (req) => {
 //!!!How to insert in order item table if there are more than one product id's
 const creatOrderDb = async (req) => {
   const { id } = req.user; //customerId
-  // console.log("ID: ", id);
+  // console.log("req: ", req.body);
   const { productId, quantity, date, sellerId, orderNumber, totalPrice } =
     req.body;
-  const insertOrder = `INSERT INTO orders("customerId","paymentId","date","orderStatus","totalPrice") VALUES($1,$2,$3,$4,$5) RETURNING *`;
+  // console.log("ID: ", productId);
+  const insertOrder = `INSERT INTO orders ("customerId","paymentId","date","orderStatus","totalPrice") VALUES($1,$2,$3,$4,$5) RETURNING *`;
   const order = await dbConfig.query(insertOrder, [
-    id,
+    1,
     "1",
     date,
     "Pending",
@@ -53,7 +54,7 @@ const creatOrderDb = async (req) => {
   // console.log("orders: ", order.rows);
   const orderId = order.rows[0].orderId;
   // INSERT INTO ORDER ITEM TABLE
-  const insertorderItem = `INSERT INTO "orderItem"("orderId","productId","sellerId","orderNumber","quantity") VALUES ($1,$2,$3,$4,$5) RETURNING*`;
+  const insertorderItem = `INSERT INTO orderItem("orderId","productId","sellerId","orderNumber","quantity") VALUES ($1,$2,$3,$4,$5) RETURNING*`;
   const item = await dbConfig.query(insertorderItem, [
     orderId,
     productId,

@@ -22,8 +22,8 @@ const {
 } = require("../utils/validators/customerValidator");
 // const { authorize } = require("../utils/validators/customerValidator");
 
-router.post("/register", registerCustomer); // registerValidator,
-router.post("/login", loginCustomer); // loginValidator,
+router.post("/register", registerValidator, registerCustomer);
+router.post("/login", loginValidator, loginCustomer);
 router.get("/orders", customerAuthorize, getAllOrders);
 router.get("/orders/:orderId", customerAuthorize, getOrderById);
 router.post("/orders/create", customerAuthorize, orderValidator, createOrder);

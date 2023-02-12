@@ -25,7 +25,7 @@ const registerCustomer = async (req, res) => {
   const body = req.body;
   try {
     const user = await registerCustomerDb(body);
-    // console.log(user)
+    // console.log("user: ", user);
     if (user) res.status(200).json({ message: "User Added Successfully" });
   } catch (error) {
     console.error(error.message);
@@ -38,8 +38,8 @@ const loginCustomer = async (req, res) => {
     const { email, password } = req.body;
     //checking user existance
     const user = await loginCustomerDb({ email, password });
-    // console.log("res: ", user.rows);
-
+    // console.log("password: ", user.rows);
+    // console.log("login Pass: ", password, "login email: ", email);
     if (user) {
       const hashedPassword = await bcrypt.compare(
         password,
@@ -47,10 +47,13 @@ const loginCustomer = async (req, res) => {
       );
       // console.log(hashedPassword);
       if (!hashedPassword) {
-        return res.status(401).json("Password is incorrect");
+        return res
+          .status(401)
+          .json({ message: "Password is incorrect", status: 401 });
       }
       //  jwt token
-      const token = jwtgenerator(user.rows[0].customerId);
+      const token = jwtgenerator(user.rows[0].customerId, email);
+      // console.log(token);
       res.json({
         jwtToken: token,
         user: user.rows,
@@ -128,13 +131,15 @@ const createOrder = async (req, res) => {
           body: createOrder,
           status: API_STATUS_CODES.SUCCESS,
         })
-      : res.status(CONTROLLER_ERROR.status).json({
-          message: CONTROLLER_ERROR.message,
-          status: CONTROLLER_ERROR.status,
+      : res.status(INVALID_REQUEST.status).json({
+          message: INVALID_REQUEST.message,
+          status: INVALID_REQUEST.status,
         });
-    // console.log("Im here");
   } catch (err) {
-    // console.log("Im here");
+    res.status(CONTROLLER_ERROR.status).json({
+      message: CONTROLLER_ERROR.message,
+      status: CONTROLLER_ERROR.status,
+    });
     console.error(
       new Error("Customer controller: Create Order Error"),
       err.message

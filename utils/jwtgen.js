@@ -3,9 +3,10 @@ require("dotenv").config();
 
 const secret = process.env.SECRET_KEY;
 
-const jwtgenerator = (customerId) => {
+const jwtgenerator = (id, email) => {
   const payload = {
-    user: customerId,
+    id,
+    email,
   };
   return jwt.sign(payload, secret);
 };

@@ -6,7 +6,7 @@ const registerCustomerDb = async (data) => {
   const { email, password, firstName, lastName, address } = data;
   const query = `SELECT * FROM users WHERE email =$1`;
   const user = await dbConfig.query(query, [email]);
-  // console.log(user.rows)
+  // console.log(user.rows);
   //  check if user exists....
   if (user.rows.length !== 0) {
     return (user = []);
@@ -38,7 +38,7 @@ const loginCustomerDb = async (data) => {
 };
 const forgetPDb = async ({ email, newpassword }) => {
   const query = `SELECT * FROM users WHERE email = '${email}'`;
-  console.log(query);
+  // console.log(query);
   const user = await dbConfig.query(query);
   if (user.rows === 0) {
     return [];

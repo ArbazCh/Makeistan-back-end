@@ -1,4 +1,26 @@
-// DB essentials
+// //Azure DB
+// const Pool = require("pg").Pool;
+// require("dotenv").config();
+
+// const dbConfig = new Pool({
+//   host: "makeistan.postgres.database.azure.com",
+//   port: 5432,
+//   database: "makeistandb",
+//   user: "makeistan",
+//   password: "090078601niais.",
+//   ssl: {
+//     rejectUnauthorized: false,
+//   },
+// });
+
+// dbConfig
+//   .connect()
+//   .then(() => console.log("Connected to the database"))
+//   .catch((err) => console.error("Failed to connect to the database", err));
+
+// module.exports = dbConfig;
+
+// Local Machine DB essentials
 
 const Pool = require("pg").Pool;
 require("dotenv").config();

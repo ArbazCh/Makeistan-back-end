@@ -188,7 +188,7 @@ ALTER TABLE sellers
 ADD "password" VARCHAR;
 
 ALTER TABLE users
-ALTER COLUMN "password" TYPE VARCHAR;
+ALTER COLUMN "password" TYPE VARCHAR(255);
 
 ALTER TABLE orders ADD COLUMN "totalPrice" INT;
 ALTER TABLE orders DROP COLUMN "time";

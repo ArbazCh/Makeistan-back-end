@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
+const logger = require("../utils/logger");
 const { jwtgenerator } = require("../utils/jwtgen");
 const {
   registerCustomerDb,
@@ -20,7 +21,7 @@ const {
 } = require("../repository/order.db");
 
 const registerCustomer = async (req, res) => {
-  // console.log("BE Req", req.body);
+  console.log("BE Req", req.body);
 
   const body = req.body;
   try {
@@ -33,13 +34,11 @@ const registerCustomer = async (req, res) => {
   }
 };
 const loginCustomer = async (req, res) => {
-  // console.log("Req: ", req.body);
   try {
     const { email, password } = req.body;
+    console.log("req: ", req.body);
     //checking user existance
     const user = await loginCustomerDb({ email, password });
-    // console.log("password: ", user.rows);
-    // console.log("login Pass: ", password, "login email: ", email);
     if (user) {
       const hashedPassword = await bcrypt.compare(
         password,
@@ -53,7 +52,6 @@ const loginCustomer = async (req, res) => {
       }
       //  jwt token
       const token = jwtgenerator(user.rows[0].customerId, email);
-      // console.log(token);
       res.json({
         jwtToken: token,
         user: user.rows,
@@ -68,7 +66,6 @@ const loginCustomer = async (req, res) => {
 const forgetP = async (req, res) => {
   try {
     const { email, newpassword } = req.body;
-    // console.log(req.body);
     //checking if user exists
     const user = await forgetPDb({ email, newpassword });
 
@@ -120,11 +117,8 @@ const getOrderById = async (req, res) => {
 };
 
 const createOrder = async (req, res) => {
-  // console.log("req: ", req.body);
-
   try {
     const createOrder = await creatOrderDb(req);
-    // console.log("create order", createOrder.order.rows);
     createOrder.order
       ? res.status(API_STATUS_CODES.SUCCESS).json({
           message: RESPONSE_MESSAGES.ORDER_CREATED,
@@ -139,6 +133,11 @@ const createOrder = async (req, res) => {
     res.status(CONTROLLER_ERROR.status).json({
       message: CONTROLLER_ERROR.message,
       status: CONTROLLER_ERROR.status,
+    });
+    console.log("here");
+    logger.log({
+      level: "error",
+      message: err.message,
     });
     console.error(
       new Error("Customer controller: Create Order Error"),

@@ -28,30 +28,23 @@ const getOrderByIdDb = async (req) => {
   // ON p."productId"=oi."productId"
   //   WHERE o."orderId"=$1 AND u."customerId"=$2
   // `;
-
   const result = await dbConfig.query(query, [id, orderId]); // return the result
-  // console.log(first.rows);
   if (result.rows === 0) return [];
   return result;
 };
-//Create order against the customer id
-
-//!!!How to insert in order item table if there are more than one product id's
 const creatOrderDb = async (req) => {
   const { id } = req.user; //customerId
-  // console.log("req: ", req.body);
+
   const { productId, quantity, date, sellerId, orderNumber, totalPrice } =
     req.body;
-  // console.log("ID: ", productId);
   const insertOrder = `INSERT INTO orders ("customerId","paymentId","date","orderStatus","totalPrice") VALUES($1,$2,$3,$4,$5) RETURNING *`;
   const order = await dbConfig.query(insertOrder, [
-    1,
+    id, // 10 user in azure db
     "1",
     date,
     "Pending",
     totalPrice,
   ]);
-  // console.log("orders: ", order.rows);
   const orderId = order.rows[0].orderId;
   // INSERT INTO ORDER ITEM TABLE
   const insertorderItem = `INSERT INTO orderItem("orderId","productId","sellerId","orderNumber","quantity") VALUES ($1,$2,$3,$4,$5) RETURNING*`;
@@ -62,7 +55,6 @@ const creatOrderDb = async (req) => {
     orderNumber,
     quantity,
   ]);
-  // console.log("Order: ", item);
   if (item.rows === 0) return [];
   if (order.rows === 0) return [];
   return { order, item };

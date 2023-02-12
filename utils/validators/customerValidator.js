@@ -12,7 +12,7 @@ const registerValidator = async (req, res, next) => {
   try {
     // console.log("Reg Valditaor");
     const { email, password, firstName, lastName, address } = req.body;
-    console.log("register password: ", password, "reg email: ",email);
+    console.log("register password: ", password, "reg email: ", email);
     if (
       typeof password === "string" &&
       typeof email === "string" &&

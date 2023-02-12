@@ -4,6 +4,7 @@ const { jwtgenerator } = require("../utils/jwtgen");
 
 const registerCustomerDb = async (data) => {
   const { email, password, firstName, lastName, address } = data;
+  console.log("pass: ", password);
   const query = `SELECT * FROM users WHERE email =$1`;
   const user = await dbConfig.query(query, [email]);
   // console.log(user.rows);
@@ -12,12 +13,12 @@ const registerCustomerDb = async (data) => {
     return (user = []);
   }
   //  bcryption---------------
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  // const saltRounds = 10;
+  // const hashedPassword = await bcrypt.hash(password, saltRounds);
   const insertQuery = `INSERT  INTO  "users" ("email", "password", "firstName", "lastName", "address") VALUES ($1, $2, $3, $4, $5) RETURNING *`;
   const result = await dbConfig.query(insertQuery, [
     email,
-    hashedPassword,
+    password,
     firstName,
     lastName,
     address,

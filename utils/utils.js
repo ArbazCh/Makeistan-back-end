@@ -6,6 +6,7 @@ const encryptPassword = async (password) => {
 
   const encryptedPassword = await bcrypt.hash(password, 10);
 
+  // console.log("actual Hash Password: ", encryptedPassword);
   return encryptedPassword;
 };
 

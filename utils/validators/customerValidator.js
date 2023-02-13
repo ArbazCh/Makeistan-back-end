@@ -1,6 +1,10 @@
 const validator = require("validator");
 const { encryptPassword } = require("../utils");
-const { INVALID_REQUEST } = require("../../constants/error");
+const {
+  INVALID_REQUEST,
+  AUTHORIZATION_FAILED,
+  CONTROLLER_ERROR,
+} = require("../../constants/error");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
@@ -8,6 +12,7 @@ const registerValidator = async (req, res, next) => {
   try {
     // console.log("Reg Valditaor");
     const { email, password, firstName, lastName, address } = req.body;
+    console.log("register password: ", password, "reg email: ", email);
     if (
       typeof password === "string" &&
       typeof email === "string" &&
@@ -52,33 +57,45 @@ const loginValidator = async (req, res, next) => {
   }
 };
 
-const authorize = async (req, res, next) => {
+const customerAuthorize = async (req, res, next) => {
+  // console.log("order Body: ", req.body);
   try {
     let token = req.headers.authorization;
-    // console.log(token);
+    // console.log("Token: ", token);
     if (!token) return res.json(INVALID_REQUEST);
     const bearer = token.split(" ")[1];
+    // console.log("Token", bearer);
     const user = jwt.verify(bearer, process.env.SECRET_KEY);
-    // console.log("user:", user, "Bearer: ", bearer);
+    // console.log("user:", user);
     req.user = user;
+    // console.log("user: ", user);
     next();
   } catch (err) {
-    res.status(INVALID_REQUEST.status).json(INVALID_REQUEST.message);
     console.error(new Error("auth catch error: "), err.message);
+    return res.status(AUTHORIZATION_FAILED.status).json({
+      message: AUTHORIZATION_FAILED.message,
+      status: AUTHORIZATION_FAILED.status,
+    });
   }
 };
 
 const orderValidator = async (req, res, next) => {
-  console.log(req.body);
+  // console.log(req.body);
   try {
     const { paymentId, productId, sellerId, orderNumber, quantity } = req.body;
     if (paymentId && productId && sellerId && orderNumber && quantity >= 1)
       return next();
     else {
-      return res.status(INVALID_REQUEST.status).json(INVALID_REQUEST.message);
+      return res.status(INVALID_REQUEST.status).json({
+        message: INVALID_REQUEST.message,
+        status: INVALID_REQUEST.status,
+      });
     }
   } catch (err) {
-    res.status(INVALID_REQUEST.status).json(INVALID_REQUEST.message);
+    res.status(CONTROLLER_ERROR.status).json({
+      message: CONTROLLER_ERROR.message,
+      status: CONTROLLER_ERROR.status,
+    });
     console.error(new Error(" catch error orderValidator: ", err.message));
   }
 };
@@ -86,6 +103,6 @@ const orderValidator = async (req, res, next) => {
 module.exports = {
   registerValidator,
   loginValidator,
-  authorize,
+  customerAuthorize,
   orderValidator,
 };

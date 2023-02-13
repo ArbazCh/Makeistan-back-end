@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const pool = require("../db.config")
+const dbConfig = require("../db.config")
 const {
     loginAdminDb,
     getAllCategoriesDb,
@@ -8,6 +8,19 @@ const {
     CreateCategoryDb,
     deleteCategoryByIdDb}=require('../repository/admin.db')
 const {jwtGenerator}=require('../utils/utils')
+const {
+    API_STATUS_CODES,
+    RESPONSE_MESSAGES,
+} = require("../constants/constant");const { 
+    CONTROLLER_ERROR, 
+    INVALID_REQUEST } = require("../constants/error");
+    const {
+        getAllAdminOrdersDb,
+        getAdminSellerOrdersByIDDb,
+        getAdminCustomerOrdersByIDDb,
+        
+      } = require("../repository/order.db");
+      const {getAllSellersDb}=require('../repository/seller.db')
 
 const getAllCategories = async (req, res) => {
     
@@ -93,6 +106,98 @@ const adminLogin=async(req,res)=>{
     }
 }
 
+const getAllOrders = async (req, res) => {
+  try {
+    const orders = await getAllAdminOrdersDb({});
+    // console.log(orders);
+    if (orders.rows)
+      res.status(API_STATUS_CODES.SUCCESS).json({
+        message: RESPONSE_MESSAGES.SUCCESS,
+        body: orders.rows,
+      });
+    else {
+      res.status(INVALID_REQUEST.status).json(INVALID_REQUEST);
+    }
+  } catch (err) {
+    res.status(INVALID_REQUEST.status).json(INVALID_REQUEST.message);
+    console.error(new Error("admin Controller getAllOrder"), err.message);
+  }
+};
 
-module.exports = {getAllCategories,
-    getCategoryById,UpdateCategoryById,CreateCategory,deleteCategoryById,adminLogin};
+const getOrdersBySellerId = async (req, res) => {
+  const { orderId, sellerId } = req.body;
+  // console.log(orderId);
+  try {
+    const order = await getAdminSellerOrdersByIDDb({ orderId, sellerId });
+    // console.log(order);
+    if (order.rows >= 1)
+      res.status(API_STATUS_CODES.SUCCESS).json({
+        message: RESPONSE_MESSAGES.SUCCESS,
+        body: order.rows,
+      });
+    else {
+      res.status(INVALID_REQUEST.status).json(INVALID_REQUEST);
+    }
+  } catch (err) {
+    res.status(INVALID_REQUEST.status).json(INVALID_REQUEST.message);
+    console.error(
+      new Error("admin Controller getOrderBySellerId"),
+      err.message
+    );
+  }
+};
+
+const getOrdersByCustomerId = async (req, res) => {
+  const { orderId, customerId } = req.body;
+  // console.log(orderId);
+  try {
+    const order = await getAdminCustomerOrdersByIDDb({ orderId, customerId });
+    // console.log(order);
+    if (order.rows >= 1)
+      res.status(API_STATUS_CODES.SUCCESS).json({
+        message: RESPONSE_MESSAGES.SUCCESS,
+        body: order.rows,
+      });
+    else {
+      res.status(INVALID_REQUEST.status).json(INVALID_REQUEST);
+    }
+  } catch (err) {
+    res.status(INVALID_REQUEST.status).json(INVALID_REQUEST.message);
+    console.error(
+      new Error("admin Controller getOrderByCustomerId"),
+      err.message
+    );
+  }
+};
+
+const getAllSellers = async (req, res) => {
+
+
+  try {
+
+      const sellers = await getAllSellersDb();
+
+      res.json(sellers.rows);
+
+      console.log(sellers.rows)
+
+  } catch (error) {
+
+      console.log(error.message);
+      res.status(API_STATUS_CODES.INTERNAL_SERVER_ERROR).send(RESPONSE_MESSAGES.SERVER_ERROR + error.message);
+  }
+
+}
+
+module.exports = {
+  getAllOrders,
+  getOrdersBySellerId,
+  getOrdersByCustomerId,
+  getAllSellers,
+  getAllCategories,
+  getCategoryById,
+  UpdateCategoryById,
+  CreateCategory,
+  deleteCategoryById,
+  adminLogin
+};

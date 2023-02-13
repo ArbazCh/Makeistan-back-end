@@ -2,15 +2,71 @@ const dbConfig = require("../db.config");
 
 const loginAdminDb = async ({ loginId }) => {
     try {
-      const query = `SELECT * FROM admin where "loginId" = $1 LIMIT 1`;
-      // console.log("Inside Db");
+      const query = `SELECT * FROM admin where "loginId" = $1`;
+      
       const result = await dbConfig.query(query, [loginId]);
-      // console.log("Login DB: ", result);
+
       return result;
     } catch (error) {
       console.error(error.message);
     }
   };
-  
-  module.exports = {loginAdminDb };
+const getAllCategoriesDb = async (req, res) => {
+   
+  try {
+      const allCate = await dbConfig.query(`SELECT * FROM "categories"`);
+      return allCate
+  } catch (err) {
+      console.error(err.message);
+  }
+};
 
+const getCategoryByIdDb = async (req, res) => {
+  try {
+      const { categoryId } = req.params;
+      const category = await dbConfig.query(`SELECT * FROM "categories" WHERE "categoryId" = $1`, [
+          categoryId
+      ]);
+      return category
+  } catch (err) {
+      console.error(err.message);
+  }
+};
+ const UpdateCategoryByIdDb =  async (id,name) => {
+  try {
+     
+      const updateCategory = await dbConfig.query(`UPDATE categories SET "name" = $1 WHERE "categoryId" = $2`,
+          [name, id]
+      );
+     return updateCategory
+  } catch (err) {
+      console.error(err.message);
+  }
+
+};
+ const CreateCategoryDb = async ({description}) => {
+  try {
+      const newCate = await dbConfig.query(
+          `INSERT INTO categories("name") VALUES ($1) RETURNING *`,
+          [description]
+      );
+      return newCate
+  } catch (err) {
+      console.error(err.message);
+  }
+};
+
+const deleteCategoryByIdDb = async (id)=>{
+  console.log(id)
+  
+  try {
+      const deleteCategory = await dbConfig.query(`DELETE FROM categories WHERE "categoryId" =$1`,[
+          id
+      ]);
+      return deleteCategory
+  } catch (err) {
+      console.error(err.message);
+  }
+};
+
+  module.exports = {loginAdminDb, getAllCategoriesDb, getCategoryByIdDb, UpdateCategoryByIdDb,CreateCategoryDb,deleteCategoryByIdDb,};

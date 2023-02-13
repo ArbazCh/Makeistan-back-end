@@ -1,10 +1,19 @@
-var bcrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken')
+
 
 const encryptPassword = async (password) => {
-  // console.log("Bcypt utils");
+
   const encryptedPassword = await bcrypt.hash(password, 10);
-  // console.log("Hash Password: ", encryptedPassword);
+
   return encryptedPassword;
 };
 
-module.exports = { encryptPassword };
+const jwtGenerator=(admin_id) =>{
+  const payload ={
+      admin: admin_id
+  };
+  return jwt.sign(payload,process.env.SECRET_KEY, {expiresIn: "1hr"});
+}
+
+module.exports = { encryptPassword,jwtGenerator };
